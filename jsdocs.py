@@ -53,7 +53,7 @@ def getParser(view):
     scope = view.scope_name(view.sel()[0].end())
     res = re.search('\\bsource\\.([a-z+\-]+)', scope)
     sourceLang = res.group(1) if res else 'js'
-    viewSettings = view.settings()
+    viewSettings = sublime.load_settings("DocBlockr.sublime-settings")
 
     if sourceLang == "php":
         return JsdocsPHP(viewSettings)
@@ -154,7 +154,7 @@ class JsdocsCommand(sublime_plugin.TextCommand):
     def initialize(self, v, inline=False):
         point = v.sel()[0].end()
 
-        self.settings = v.settings()
+        self.settings = sublime.load_settings("DocBlockr.sublime-settings")
 
         # trailing characters are put inside the body of the comment
         self.trailingRgn = sublime.Region(point, v.line(point).end())
@@ -1384,7 +1384,7 @@ class JsdocsTrimAutoWhitespace(sublime_plugin.TextCommand):
         v = self.view
         lineRegion = v.line(v.sel()[0])
         line = v.substr(lineRegion)
-        spaces = max(0, v.settings().get("jsdocs_indentation_spaces", 1))
+        spaces = max(0, sublime.load_settings("DocBlockr.sublime-settings").get("jsdocs_indentation_spaces", 1))
         v.replace(edit, lineRegion, re.sub("^(\\s*\\*)\\s*$", "\\1\n\\1" + (" " * spaces), line))
 
 
@@ -1397,7 +1397,7 @@ class JsdocsWrapLines(sublime_plugin.TextCommand):
 
     def run(self, edit):
         v = self.view
-        settings = v.settings()
+        settings = sublime.load_settings("DocBlockr.sublime-settings")
         rulers = settings.get('rulers')
         tabSize = settings.get('tab_size')
 
