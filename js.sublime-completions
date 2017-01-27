@@ -41,7 +41,7 @@
     { "trigger" : "@lends",         "contents": "@lends ${1:[symbolAlias]}"},
     { "trigger" : "@license",       "contents": "@license ${1:[url]} ${2:[description]}"},
     { "trigger" : "@main",          "contents": "@main ${1:[module name]}"},
-    { "trigger" : "@memberOf",      "contents": "@memberOf ${1:[parentNamePath]}"},
+    { "trigger" : "@memberof",      "contents": "@memberof ${1:[parentNamePath]}"},
     { "trigger" : "@method",        "contents": "@method ${1:[name]}"},
     { "trigger" : "@module",        "contents": "@module ${1:[module name]}"},
     { "trigger" : "@name",          "contents": "@name ${1:[name]}"},
