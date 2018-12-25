@@ -15,53 +15,6 @@ import imp
 from functools import reduce
 import sys
 
-def plugin_loaded():
-    migrate_old_settings()
-
-def migrate_old_settings():
-    view = sublime.active_window().active_view()
-    if view:
-        if view.settings().has('docblockr.old_settings_migrated'):
-            return # settings have already been migrated
-
-    print('')
-    print('[docblockr] migrating old docblockr settings')
-    print('')
-
-    import os
-
-    old_settings_file = os.path.join(sublime.packages_path(), 'User', 'Base File.sublime-settings')
-    if not os.path.isfile(old_settings_file):
-        return
-
-    old_settings_file_content = None
-    with open(old_settings_file) as f:
-        old_settings_file_content = f.read()
-
-    if not old_settings_file_content:
-        return
-
-    decoded_old_settings = sublime.decode_value(old_settings_file_content)
-
-    existing_settings = []
-    for k, v in decoded_old_settings.items():
-        if k[:7] == 'jsdocs_':
-            existing_settings.append(k)
-
-    preferences = sublime.load_settings('Preferences.sublime-settings')
-
-    for old_key in existing_settings:
-        preferences.set('docblockr.' + old_key[7:], decoded_old_settings[old_key])
-
-    preferences.set('docblockr.old_settings_migrated', True)
-    sublime.save_settings('Preferences.sublime-settings')
-
-    for k in existing_settings:
-        del decoded_old_settings[k]
-
-    if len(decoded_old_settings) <= 0:
-        os.remove(old_settings_file)
-
 def read_line(view, point):
     if (point >= view.size()):
         return
@@ -101,7 +54,7 @@ def getParser(view):
     scope = view.scope_name(view.sel()[0].end())
     res = re.search('\\bsource\\.([a-z+\-]+)', scope)
     sourceLang = res.group(1) if res else 'js'
-    viewSettings = view.settings()
+    viewSettings = sublime.load_settings("DocBlockr.sublime-settings")
 
     if sourceLang == "php":
         return JsdocsPHP(viewSettings)
@@ -217,7 +170,7 @@ class JsdocsCommand(sublime_plugin.TextCommand):
     def initialize(self, v, inline=False):
         point = v.sel()[0].end()
 
-        self.settings = v.settings()
+        self.settings = sublime.load_settings("DocBlockr.sublime-settings")
 
         # trailing characters are put inside the body of the comment
         self.trailingRgn = sublime.Region(point, v.line(point).end())
@@ -1467,7 +1420,7 @@ class JsdocsTrimAutoWhitespace(sublime_plugin.TextCommand):
         v = self.view
         lineRegion = v.line(v.sel()[0])
         line = v.substr(lineRegion)
-        spaces = max(0, v.settings().get("docblockr.indentation_spaces", 1))
+        spaces = max(0, sublime.load_settings("DocBlockr.sublime-settings").get("docblockr.indentation_spaces", 1))
         v.replace(edit, lineRegion, re.sub("^(\\s*\\*)\\s*$", "\\1\n\\1" + (" " * spaces), line))
 
 
@@ -1480,7 +1433,7 @@ class JsdocsWrapLines(sublime_plugin.TextCommand):
 
     def run(self, edit):
         v = self.view
-        settings = v.settings()
+        settings = sublime.load_settings("DocBlockr.sublime-settings")
         rulers = settings.get('rulers')
         tabSize = settings.get('tab_size')
 
@@ -1662,7 +1615,3 @@ class JsdocsTypescript(JsdocsParser):
             res = re.search('new (' + self.settings['fnIdentifier'] + ')', val)
             return res and res.group(1) or None
         return None
-
-# ST2 compat
-if sys.version_info < (3,):
-    plugin_loaded()
