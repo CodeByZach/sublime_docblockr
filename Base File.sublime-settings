@@ -59,11 +59,17 @@
   // Since there seems to be no agreed standard for "@return" or "@returns", use this setting to rename it as you wish.
   "jsdocs_return_tag": "@return",
 
+  // Add a '[function_name description]' for the function block
+  "jsdocs_function_description": true,
+
   // Add a '[description]' placeholder for the return tag?
   "jsdocs_return_description": true,
 
   // Add a '[description]' placeholder for the param tag?
   "jsdocs_param_description": true,
+
+  // Add a name of parameter in param tag?
+  "jsdocs_param_name": true,
 
   // Whether there should be blank lines added between the description line, and between tags of different types.
   // Possible values are true, false, or "after_description".
@@ -125,6 +131,12 @@
 
   // If set to true, an extra line break is added after the end of a docblock to separate it from the code.
   "jsdocs_newline_after_block": false,
+
+  // If set to true, Ctrl+Enter while in a single line comment will 'decorate' the comment.
+  "jsdocs_decorate": true,
+
+  // If set to true, typing /**<space> will open an inline docblock
+  "jsdocs_quick_open_inline": true,
 
   "jsdocs_development_mode": false
 }
