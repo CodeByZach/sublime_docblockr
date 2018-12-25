@@ -13,6 +13,7 @@ import datetime
 import time
 import imp
 from functools import reduce
+import sys
 
 def read_line(view, point):
     if (point >= view.size()):
@@ -53,7 +54,7 @@ def getParser(view):
     scope = view.scope_name(view.sel()[0].end())
     res = re.search('\\bsource\\.([a-z+\-]+)', scope)
     sourceLang = res.group(1) if res else 'js'
-    viewSettings = view.settings()
+    viewSettings = sublime.load_settings("DocBlockr.sublime-settings")
 
     if sourceLang == "php":
         return JsdocsPHP(viewSettings)
@@ -169,7 +170,7 @@ class JsdocsCommand(sublime_plugin.TextCommand):
     def initialize(self, v, inline=False):
         point = v.sel()[0].end()
 
-        self.settings = v.settings()
+        self.settings = sublime.load_settings("DocBlockr.sublime-settings")
 
         # trailing characters are put inside the body of the comment
         self.trailingRgn = sublime.Region(point, v.line(point).end())
@@ -177,10 +178,10 @@ class JsdocsCommand(sublime_plugin.TextCommand):
         # drop trailing '*/'
         self.trailingString = escape(re.sub('\\s*\\*\\/\\s*$', '', self.trailingString))
 
-        self.indentSpaces = " " * max(0, self.settings.get("jsdocs_indentation_spaces", 1))
+        self.indentSpaces = " " * max(0, self.settings.get("docblockr.indentation_spaces", 1))
         self.prefix = "*"
 
-        settingsAlignTags = self.settings.get("jsdocs_align_tags", 'deep')
+        settingsAlignTags = self.settings.get("docblockr.align_tags", 'deep')
         self.deepAlignTags = settingsAlignTags == 'deep'
         self.shallowAlignTags = settingsAlignTags in ('shallow', True)
 
@@ -214,7 +215,7 @@ class JsdocsCommand(sublime_plugin.TextCommand):
             else:
                 return " $0 */"
         else:
-            return self.createSnippet(out) + ('\n' if self.settings.get('jsdocs_newline_after_block') else '')
+            return self.createSnippet(out) + ('\n' if self.settings.get('docblockr.newline_after_block') else '')
 
     def alignTags(self, out):
         def outputWidth(str):
@@ -228,8 +229,8 @@ class JsdocsCommand(sublime_plugin.TextCommand):
         widths = []
 
         # Grab the return tag if required.
-        if self.settings.get('jsdocs_per_section_indent'):
-            returnTag = self.settings.get('jsdocs_return_tag') or '@return'
+        if self.settings.get('docblockr.per_section_indent'):
+            returnTag = self.settings.get('docblockr.return_tag') or '@return'
         else:
             returnTag = False
 
@@ -258,7 +259,7 @@ class JsdocsCommand(sublime_plugin.TextCommand):
         maxWidths = dict(enumerate(maxWidths))
 
         # Minimum spaces between line columns
-        minColSpaces = self.settings.get('jsdocs_min_spaces_between_columns', 1)
+        minColSpaces = self.settings.get('docblockr.min_spaces_between_columns', 1)
 
         for index, line in enumerate(out):
             # format the spacing of columns, but ignore the author tag. (See #197)
@@ -308,18 +309,18 @@ class JsdocsCommand(sublime_plugin.TextCommand):
         snippet = ""
         closer = self.parser.settings['commentCloser']
         if out:
-            if self.settings.get('jsdocs_spacer_between_sections') == True:
+            if self.settings.get('docblockr.spacer_between_sections') == True:
                 lastTag = None
                 for idx, line in enumerate(out):
                     res = re.match("^\\s*@([a-zA-Z]+)", line)
                     if res and (lastTag != res.group(1)):
-                        if self.settings.get('jsdocs_function_description') == False:
+                        if self.settings.get('docblockr.function_description') == False:
                             if lastTag != None:
                                 out.insert(idx, "")
                         else:
                             out.insert(idx, "")
                         lastTag = res.group(1)
-            elif self.settings.get('jsdocs_spacer_between_sections') == 'after_description' and self.settings.get('jsdocs_function_description'):
+            elif self.settings.get('docblockr.spacer_between_sections') == 'after_description' and self.settings.get('docblockr.function_description'):
                 lastLineIsTag = False
                 for idx, line in enumerate(out):
                     res = re.match("^\\s*@([a-zA-Z]+)", line)
@@ -354,7 +355,7 @@ class JsdocsParser(object):
         return self.nameOverride
 
     def parse(self, line):
-        if self.viewSettings.get('jsdocs_simple_mode'):
+        if self.viewSettings.get('docblockr.simple_mode'):
             return None
 
         try:
@@ -413,13 +414,13 @@ class JsdocsParser(object):
             out.append('@private')
             return out
 
-        extraTagAfter = self.viewSettings.get("jsdocs_extra_tags_go_after") or False
+        extraTagAfter = self.viewSettings.get("docblockr.extra_tags_go_after") or False
 
         description = self.getNameOverride() or ('[%s%sdescription]' % (escape(name), ' ' if name else ''))
-        if self.viewSettings.get('jsdocs_function_description'):
+        if self.viewSettings.get('docblockr.function_description'):
             out.append("${1:%s}" % description)
 
-        if (self.viewSettings.get("jsdocs_autoadd_method_tag") is True):
+        if (self.viewSettings.get("docblockr.autoadd_method_tag") is True):
             out.append("@%s %s" % (
                 "method",
                 escape(name)
@@ -436,17 +437,17 @@ class JsdocsParser(object):
                 typeInfo = self.getTypeInfo(argType, argName)
 
                 format_str = "@param %s%s"
-				
-				typeInfoSettings = self.viewSettings.get("jsdocs_type_info")
+
+				typeInfoSettings = self.viewSettings.get("docblockr.type_info")
 				typeInfoName = escape(argType or self.guessTypeFromName(argName) or "[type]")
 				if typeInfoSettings[typeInfoName]:
 					format_str += " "+typeInfoSettings[typeInfoName]
-                elif (self.viewSettings.get('jsdocs_param_description')):
+                elif (self.viewSettings.get('docblockr.param_description')):
                     format_str += " ${1:[description]}"
 
                 out.append(format_str % (
                     typeInfo,
-                    escape(argName) if self.viewSettings.get('jsdocs_param_name') else ''
+                    escape(argName) if self.viewSettings.get('docblockr.param_name') else ''
                 ))
 
         # return value type might be already available in some languages but
@@ -461,17 +462,17 @@ class JsdocsParser(object):
                     "}" if self.settings['curlyTypes'] else ""
                 )
             format_args = [
-                self.viewSettings.get('jsdocs_return_tag') or '@return',
+                self.viewSettings.get('docblockr.return_tag') or '@return',
                 typeInfo
             ]
 
-            if (self.viewSettings.get('jsdocs_return_description')):
+            if (self.viewSettings.get('docblockr.return_description')):
                 format_str = "%s%s %s${1:[description]}"
                 third_arg = ""
 
                 # the extra space here is so that the description will align with the param description
-                if args and self.viewSettings.get('jsdocs_align_tags') == 'deep':
-                    if not self.viewSettings.get('jsdocs_per_section_indent'):
+                if args and self.viewSettings.get('docblockr.align_tags') == 'deep':
+                    if not self.viewSettings.get('docblockr.per_section_indent'):
                         third_arg = " "
 
                 format_args.append(third_arg)
@@ -529,7 +530,7 @@ class JsdocsParser(object):
         return arg
 
     def addExtraTags(self, out):
-        extraTags = self.viewSettings.get('jsdocs_extra_tags', [])
+        extraTags = self.viewSettings.get('docblockr.extra_tags', [])
         if (len(extraTags) > 0):
             out.extend(extraTags)
 
@@ -558,7 +559,7 @@ class JsdocsParser(object):
             elif 'regex' in rule:
                 return re.search(rule['regex'], name)
 
-        return list(filter(checkMatch, self.viewSettings.get('jsdocs_notation_map', [])))
+        return list(filter(checkMatch, self.viewSettings.get('docblockr.notation_map', [])))
 
     def getDefinition(self, view, pos):
         """
@@ -610,7 +611,7 @@ class JsdocsJavascript(JsdocsParser):
             # curly brackets around the type information
             "curlyTypes": True,
             'typeInfo': True,
-            "typeTag": self.viewSettings.get('jsdocs_override_js_var') or "type",
+            "typeTag": self.viewSettings.get('docblockr.override_js_var') or "type",
             # technically, they can contain all sorts of unicode, but w/e
             "varIdentifier": identifier,
             "fnIdentifier":  identifier,
@@ -722,16 +723,19 @@ class JsdocsJavascript(JsdocsParser):
         out = super(JsdocsJavascript, self).getMatchingNotations(name)
         if name and name[0] == '*':
             # if '@returns' is preferred, then also use '@yields'. Otherwise, '@return' and '@yield'
-            yieldTag = '@yield' + ('s' if self.viewSettings.get('jsdocs_return_tag', '_')[-1] == 's' else '')
-            description = ' ${1:[description]}' if self.viewSettings.get('jsdocs_return_description', True) else ''
+            yieldTag = '@yield' + ('s' if self.viewSettings.get('docblockr.return_tag', '_')[-1] == 's' else '')
+            description = ' ${1:[description]}' if self.viewSettings.get('docblockr.return_description', True) else ''
             out.append({ 'tags': [
-                '%s {${1:[type]}}%s' % (yieldTag, description)
-            ]})
+                '%s {${1:[type]}}%s%s' % (
+                    yieldTag,
+                    ' ' if self.viewSettings.get('docblockr.align_tags') == 'deep' and not self.viewSettings.get('docblockr.per_section_indent') else '',
+                    description
+            )]})
         return out
 
     def guessTypeFromValue(self, val):
-        lowerPrimitives = self.viewSettings.get('jsdocs_lower_case_primitives') or False
-        shortPrimitives = self.viewSettings.get('jsdocs_short_primitives') or False
+        lowerPrimitives = self.viewSettings.get('docblockr.lower_case_primitives') or False
+        shortPrimitives = self.viewSettings.get('docblockr.short_primitives') or False
         if is_numeric(val):
             return "number" if lowerPrimitives else "Number"
         if val[0] == '"' or val[0] == "'":
@@ -755,7 +759,7 @@ class JsdocsJavascript(JsdocsParser):
 
 class JsdocsPHP(JsdocsParser):
     def setupSettings(self):
-        shortPrimitives = self.viewSettings.get('jsdocs_short_primitives') or False
+        shortPrimitives = self.viewSettings.get('docblockr.short_primitives') or False
         nameToken = '[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*'
         self.settings = {
             # curly brackets around the type information
@@ -777,13 +781,15 @@ class JsdocsPHP(JsdocsParser):
             + '(?P<name>' + self.settings['fnIdentifier'] + ')'
             # function fnName
             # (arg1, arg2)
-            + '\\s*\\(\\s*(?P<args>.*)\\)',
+            + '\\s*\\(\\s*(?P<args>.*)\\)'
+            # optional return type
+            + '(\\s*?:\\s*(?P<retval>' + self.settings['typeIdentifier'] + '))?',
             line
         )
         if not res:
             return None
 
-        return (res.group('name'), res.group('args'), None)
+        return (res.group('name'), res.group('args'), res.group('retval'))
 
     def getArgType(self, arg):
 
@@ -851,7 +857,7 @@ class JsdocsPHP(JsdocsParser):
         return None
 
     def guessTypeFromValue(self, val):
-        shortPrimitives = self.viewSettings.get('jsdocs_short_primitives') or False
+        shortPrimitives = self.viewSettings.get('docblockr.short_primitives') or False
         if is_numeric(val):
             return "float" if '.' in val else 'int' if shortPrimitives else 'integer'
         if val[0] == '"' or val[0] == "'":
@@ -868,7 +874,7 @@ class JsdocsPHP(JsdocsParser):
         return None
 
     def getFunctionReturnType(self, name, retval):
-        shortPrimitives = self.viewSettings.get('jsdocs_short_primitives') or False
+        shortPrimitives = self.viewSettings.get('docblockr.short_primitives') or False
         if (name[:2] == '__'):
             if name in ('__construct', '__destruct', '__set', '__unset', '__wakeup'):
                 return None
@@ -878,6 +884,10 @@ class JsdocsPHP(JsdocsParser):
                 return 'string'
             if name == '__isset':
                 return 'bool' if shortPrimitives else 'boolean'
+
+        if (retval):
+            return retval
+
         return JsdocsParser.getFunctionReturnType(self, name, retval)
 
 
@@ -938,7 +948,7 @@ class JsdocsCoffee(JsdocsParser):
         self.settings = {
             # curly brackets around the type information
             'curlyTypes': True,
-            'typeTag': self.viewSettings.get('jsdocs_override_js_var') or "type",
+            'typeTag': self.viewSettings.get('docblockr.override_js_var') or "type",
             'typeInfo': True,
             # technically, they can contain all sorts of unicode, but w/e
             'varIdentifier': identifier,
@@ -983,7 +993,7 @@ class JsdocsCoffee(JsdocsParser):
         return (res.group('name'), res.group('val').strip())
 
     def guessTypeFromValue(self, val):
-        lowerPrimitives = self.viewSettings.get('jsdocs_lower_case_primitives') or False
+        lowerPrimitives = self.viewSettings.get('docblockr.lower_case_primitives') or False
         if is_numeric(val):
             return "number" if lowerPrimitives else "Number"
         if val[0] == '"' or val[0] == "'":
@@ -1415,7 +1425,7 @@ class JsdocsTrimAutoWhitespace(sublime_plugin.TextCommand):
         v = self.view
         lineRegion = v.line(v.sel()[0])
         line = v.substr(lineRegion)
-        spaces = max(0, v.settings().get("jsdocs_indentation_spaces", 1))
+        spaces = max(0, sublime.load_settings("DocBlockr.sublime-settings").get("docblockr.indentation_spaces", 1))
         v.replace(edit, lineRegion, re.sub("^(\\s*\\*)\\s*$", "\\1\n\\1" + (" " * spaces), line))
 
 
@@ -1428,16 +1438,16 @@ class JsdocsWrapLines(sublime_plugin.TextCommand):
 
     def run(self, edit):
         v = self.view
-        settings = v.settings()
+        settings = sublime.load_settings("DocBlockr.sublime-settings")
         rulers = settings.get('rulers')
         tabSize = settings.get('tab_size')
 
         wrapLength = rulers[0] if (len(rulers) > 0) else 80
-        numIndentSpaces = max(0, settings.get("jsdocs_indentation_spaces", 1))
+        numIndentSpaces = max(0, settings.get("docblockr.indentation_spaces", 1))
         indentSpaces = " " * numIndentSpaces
-        indentSpacesSamePara = " " * max(0, settings.get("jsdocs_indentation_spaces_same_para", numIndentSpaces))
-        spacerBetweenSections = settings.get("jsdocs_spacer_between_sections") == True
-        spacerBetweenDescriptionAndTags = settings.get("jsdocs_spacer_between_sections") == "after_description"
+        indentSpacesSamePara = " " * max(0, settings.get("docblockr.indentation_spaces_same_para", numIndentSpaces))
+        spacerBetweenSections = settings.get("docblockr.spacer_between_sections") == True
+        spacerBetweenDescriptionAndTags = settings.get("docblockr.spacer_between_sections") == "after_description"
 
         dbRegion = getDocBlockRegion(v, v.sel()[0].begin())
 
@@ -1593,7 +1603,7 @@ class JsdocsTypescript(JsdocsParser):
         return retval if retval != 'void' else None
 
     def guessTypeFromValue(self, val):
-        lowerPrimitives = self.viewSettings.get('jsdocs_lower_case_primitives') or False
+        lowerPrimitives = self.viewSettings.get('docblockr.lower_case_primitives') or False
         if is_numeric(val):
             return "number" if lowerPrimitives else "Number"
         if val[0] == '"' or val[0] == "'":
