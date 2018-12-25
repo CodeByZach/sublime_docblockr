@@ -1,10 +1,6 @@
-DocBlockr
-=========
+# DocBlockr
 
-DocBlockr is a package for [Sublime Text 2 & 3][sublime] which makes writing
-documentation a breeze. DocBlockr supports **JavaScript** (including ES6), **PHP**,
-**ActionScript**, **Haxe**, **CoffeeScript**, **TypeScript**, **Java**, **Groovy**,
-**Objective C**, **C**, **C++** and **Rust**.
+DocBlockr is a package for [Sublime Text 2 & 3][sublime] which makes writing documentation a breeze. DocBlockr supports **JavaScript** (including ES6), **PHP**, **ActionScript**, **Haxe**, **CoffeeScript**, **TypeScript**, **Java**, **Apex**, **Groovy**, **Objective C**, **C**, **C++** and **Rust**.
 
 ## Installation
 
@@ -22,35 +18,27 @@ repo, the main development branch is `develop` and the stable 'production'
 branch is `master`. Please remember to base your branch from `develop` and issue
 the pull request back to that branch.
 
-## Show your love
-
-[![Click here to lend your support to: DocBlockr and make a donation at pledgie.com!](https://pledgie.com/campaigns/16316.png?skin_name=chrome)](http://pledgie.com/campaigns/16316)
-
 ## Changelog
 
-- **v2.13.0**, *11 Dec 2014*
-  - ECMAScript 6 support! Including:
-    - Arrow functions
-    - Default parameter values
-    - Rest parameters
-    - Parameter destructuring
-    - Shorthand method initialization
-    - `@yield` for generator functions
-- **v2.12.4**, *10 Dec 2014*
-  - Fixes regression in handling Javascript function expressions
-- **v2.12.3**, *7 Dec 2014*
-  - PHP arguments with pass-by-reference handled properly, thanks to [Gerard Roche](https://github.com/gerardroche)
-  - PHP namespaces handled properly, thanks to Gerard Roche
-  - PHP parameters with default null values handled properly, thanks to Gerard Roche
-  - ECMAScript 6 generator functions handled properly, thanks to [Sergey Zarouski](https://github.com/szarouski)
-  - Parameter name can be omitted with `jsdocs_param_name` option, thanks to [Daniel Kurecka](https://github.com/danielkurecka)
-  - Inline docblocks are expanded with <kbd>space</kbd>, thanks to Daniel Kurecka
-  - Java array types handled properly, thanks to [Alessio Linares](https://github.com/Galbar)
-- **v2.12.2**, *11 Apr 2014*
-  - Fix for PHP autocompletions
-  - Fix `@name` completion for Javascript
-- **v2.12.1**, *4 Mar 2014*
-  - Fix for Sublime Text 3
+- **v2.14.1**, *17 Aug 2015*
+  - Fix deindentation bug with reparsing doc blocks
+- **v2.14.0**, *15 Jun 2015*
+  - Adds `jsdocs_function_description` option (thanks to [Gerard Roche](https://github.com/gerardroche))
+  - Better handling of parser errors (thanks to Gerard Roche)
+- **v2.13.3**, *4 Jun 2015*
+  - PHP array shorthand is identified correctly (thanks to [Gerard Roche](https://github.com/gerardroche))
+  - Decorating comments when using tabs for indentation works better (thanks to [Jack Cherng](https://github.com/jfcherng))
+- **v2.13.2**, *30 Mar 2015*
+  - Updated PHPDoc autocompletions to align with the new spec (thanks to [Gerard Roche](https://github.com/gerardroche))
+  - Properly handle the case when commas appear inside a type name in Java
+  - Added link to README in the preferences menu
+- **v2.13.1**, *29 Mar 2015*
+  - Adds support for Apex language (thanks @michacom)
+  - Fixes identifying multidimensional arrays in C/C++
+  - Fixes reformatting and reparsing docblocks in Java
+  - Adds options to disable:
+    - opening an inline docblock with space (`jsdocs_quick_open_inline`)
+    - inline comment decoration (`jsdocs_decorate`)
 
 Older history can be found in [the history file][history].
 
@@ -60,7 +48,7 @@ Older history can be found in [the history file][history].
 
 ### Docblock completion
 
-Pressing **enter** or **tab** after `/**` (or `###*` for Coffee-Script) will yield a new line and will close the comment.
+Pressing **enter** or **tab** after `/**` (or `###*` for Coffee-Script) yields a new line and closes the comment.
 
 ![](http://spadgos.github.io/sublime-jsdocs/images/basic.gif)
 
@@ -74,9 +62,9 @@ However, if the line directly afterwards contains a function definition, then it
 
 ![](http://spadgos.github.io/sublime-jsdocs/images/function-template.gif)
 
-You can then press `tab` to move between the different fields.
+Press <kbd>Tab</kbd> to move forward through the fields, press <kbd>Shift</kbd>+<kbd>Tab</kbd> to move back through the fields.
 
-If you have many arguments, or long variable names, it might be useful to spread your arguments across multiple lines. DocBlockr will handle this situation too:
+If there are many arguments, or long variable names, it is sometimes useful to spread the arguments across multiple lines. DocBlockr handles this situation too:
 
 ![](http://spadgos.github.io/sublime-jsdocs/images/long-args.gif)
 
@@ -91,20 +79,20 @@ DocBlockr will try to make an intelligent guess about the return value of the fu
 - In Javascript, if the function begins with an uppercase letter then it is assumed that the function is a class definition. No `@return` tag is added.
 - In PHP, some of the [magic methods][magicmethods] have their values prefilled:
   - `__construct`, `__destruct`, `__set`, `__unset`, `__wakeup` have no `@return` tag.
-  - `__sleep` returns an `Array`.
+  - `__sleep` returns an `array`.
   - `__toString` returns a `string`.
   - `__isset` returns a `bool`.
 - In ES6 Javascript, generator functions get a `@yield` tag instead of `@return`
 
 ### Variable documentation
 
-If the line following your docblock contains a variable declaration, DocBlockr will try to determine the data type of the variable and insert that into the comment.
+If the line following the docblock contains a variable declaration, DocBlockr will try to determine the data type of the variable and insert that into the comment.
 
-If you press `space` or `shift+enter` after the opening `/**` then the docblock will be inserted inline.
+Press <kbd>space</kbd> or <kbd>shift</kbd>+<kbd>enter</kbd> after an opening `/**` to insert an inline docblock.
 
 ![](http://spadgos.github.io/sublime-jsdocs/images/vars.gif)
 
-DocBlockr will also try to determine the type of the variable from its name. Variables starting with `is` or `has` are assumed to be booleans, and `callback`, `cb`, `done`, `fn`, and `next` are assumed to be functions. If you use your own variable naming system (eg: hungarian notation: booleans all start with `b`, arrays start with `arr`), you can define these rules yourself. Modify the `jsdocs_notation_map` setting *(in `Base File.sublime-settings`)* like so:
+DocBlockr will also try to determine the type of the variable from its name. Variables starting with `is` or `has` are assumed to be booleans, and `callback`, `cb`, `done`, `fn`, and `next` are assumed to be functions. If you use your own variable naming system, (e.g. hungarian notation: booleans all start with `b`, arrays start with `arr`), you can define these rules yourself. Use the `jsdocs_notation_map` setting, example:
 
 ```js
 {
@@ -144,7 +132,7 @@ This applies to docblock comments `/** like this */` as well as inline double-sl
 
 In either case, you can press `shift+enter` to stop the automatic extension.
 
-Oftentimes, when documenting a parameter, or adding a description to a tag, your description will cover multiple lines. If the line you are on is directly following a tag line, pressing `tab` will move the indentation to the correct position.
+Oftentimes, when documenting a parameter, or adding a description to a tag, your description will cover multiple lines. If the line you are on is directly following a tag line, pressing <kbd>Tab</kbd> will move the indentation to the correct position.
 
 ![](http://spadgos.github.io/sublime-jsdocs/images/deep-indent.gif)
 
@@ -160,9 +148,11 @@ If you write a double-slash comment and then press `Ctrl+Enter`, DocBlockr will 
     // Foo bar baz //
     /////////////////
 
+This can be disabled by changing the `jsdocs_decorate` setting to `false`.
+
 ### Reparsing a DocBlock
 
-Sometimes, you'll perform some action which clears the fields (sections of text which you can navigate through using `tab`). This leaves you with a number of placeholders in the DocBlock with no easy way to jump to them.
+Sometimes, you'll perform some action which clears the fields (sections of text which you can navigate through using <kbd>Tab</kbd>). This leaves you with a number of placeholders in the DocBlock with no easy way to jump to them.
 
 With DocBlockr, you can reparse a comment and reactivate the fields by pressing the hotkey `Alt+Shift+Tab` in OS X or Linux, or `Alt+W` in Windows
 
@@ -182,7 +172,7 @@ Inside a comment block, hit `Alt+Q` to wrap the lines to make them fit within yo
 
 ### Adding extra tags
 
-Finally, typing `@` inside a docblock will show a completion list for all tags supported by [JSDoc][jsdoc], the [Google Closure Compiler][closure], [YUIDoc][yui] or [PHPDoc][phpdoc]. Extra help is provided for each of these tags by prefilling the arguments each expects. Pressing `tab` will move the cursor to the next argument.
+Finally, typing `@` inside a docblock will show a completion list for all tags supported by [JSDoc][jsdoc], the [Google Closure Compiler][closure], [YUIDoc][yui] or [PHPDoc][phpdoc]. Extra help is provided for each of these tags by prefilling the arguments each expects. Pressing <kbd>Tab</kbd> will move the cursor to the next argument.
 
 ## Configuration
 
@@ -273,6 +263,12 @@ You can access the configuration settings by selecting `Preferences -> Package S
 - `jsdocs_newline_after_block` *(Boolean)* If true, an extra line break is added after the end of a docblock to separate it from the code. Default `false`
 
 - `jsdocs_param_name` *(Boolean)* If true, the name of a function parameter is added to the template. If false, it is omitted. Default: `true`
+
+- `jsdocs_decorate` *(Boolean)* If false, disable decoration of single line comments with <kbd>Ctrl+Enter</kbd>. Default: `true`
+
+- `jsdocs_quick_open_inline` *(Boolean)* If true, an inline docblock will be opened when pressing <kbd>Space</kbd> after an opener (`/**`). When set to `false`, these can be opened by pressing <kbd>Shift+Enter</kbd>. Default: `true`
+
+- `jsdocs_function_description` *(Boolean)* If true, a 'description' line will be added for functions. Default: `true`
 
 ## Contributors
 

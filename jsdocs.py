@@ -1,5 +1,5 @@
 """
-DocBlockr v2.13.0
+DocBlockr v2.14.1
 by Nick Fisher, and all the great people listed in CONTRIBUTORS.md
 https://github.com/spadgos/sublime-jsdocs
 
@@ -65,7 +65,7 @@ def getParser(view):
         return JsdocsCPP(viewSettings)
     elif sourceLang == 'objc' or sourceLang == 'objc++':
         return JsdocsObjC(viewSettings)
-    elif sourceLang == 'java' or sourceLang == 'groovy':
+    elif sourceLang == 'java' or sourceLang == 'groovy' or sourceLang == 'apex':
         return JsdocsJava(viewSettings)
     elif sourceLang == 'rust':
         return JsdocsRust(viewSettings)
@@ -130,6 +130,21 @@ def flatten(theList):
     [[(1,1)], [(2,2), (3, 3)]] --> [(1,1), (2,2), (3,3)]
     """
     return [item for sublist in theList for item in sublist]
+
+def getDocBlockRegion(view, point):
+    """
+    Given a starting point inside a DocBlock, return a Region which encompasses the entire block.
+    This is similar to `run_command('expand_selection', { to: 'scope' })`, however it is resilient to bugs which occur
+    due to language files adding scopes inside the DocBlock (eg: to highlight tags)
+    """
+    start = end = point
+    while start > 0 and view.scope_name(start - 1).find('comment.block') > -1:
+        start = start - 1
+
+    while end < view.size() and view.scope_name(end).find('comment.block') > -1:
+        end = end + 1
+
+    return sublime.Region(start, end)
 
 class JsdocsCommand(sublime_plugin.TextCommand):
 
@@ -298,9 +313,13 @@ class JsdocsCommand(sublime_plugin.TextCommand):
                 for idx, line in enumerate(out):
                     res = re.match("^\\s*@([a-zA-Z]+)", line)
                     if res and (lastTag != res.group(1)):
+                        if self.settings.get('jsdocs_function_description') == False:
+                            if lastTag != None:
+                                out.insert(idx, "")
+                        else:
+                            out.insert(idx, "")
                         lastTag = res.group(1)
-                        out.insert(idx, "")
-            elif self.settings.get('jsdocs_spacer_between_sections') == 'after_description':
+            elif self.settings.get('jsdocs_spacer_between_sections') == 'after_description' and self.settings.get('jsdocs_function_description'):
                 lastLineIsTag = False
                 for idx, line in enumerate(out):
                     res = re.match("^\\s*@([a-zA-Z]+)", line)
@@ -338,13 +357,17 @@ class JsdocsParser(object):
         if self.viewSettings.get('jsdocs_simple_mode'):
             return None
 
-        out = self.parseFunction(line)  # (name, args, retval, options)
-        if (out):
-            return self.formatFunction(*out)
+        try:
+            out = self.parseFunction(line)  # (name, args, retval, options)
+            if (out):
+                return self.formatFunction(*out)
 
-        out = self.parseVar(line)
-        if out:
-            return self.formatVar(*out)
+            out = self.parseVar(line)
+            if out:
+                return self.formatVar(*out)
+        except:
+            # TODO show exception if dev\debug mode
+            return None
 
         return None
 
@@ -393,7 +416,8 @@ class JsdocsParser(object):
         extraTagAfter = self.viewSettings.get("jsdocs_extra_tags_go_after") or False
 
         description = self.getNameOverride() or ('[%s%sdescription]' % (escape(name), ' ' if name else ''))
-        out.append("${1:%s}" % description)
+        if self.viewSettings.get('jsdocs_function_description'):
+            out.append("${1:%s}" % description)
 
         if (self.viewSettings.get("jsdocs_autoadd_method_tag") is True):
             out.append("@%s %s" % (
@@ -744,11 +768,11 @@ class JsdocsPHP(JsdocsParser):
 
     def parseFunction(self, line):
         res = re.search(
-            'function\\s+&?(?:\\s+)?'
+            'function\\s+&?\\s*'
             + '(?P<name>' + self.settings['fnIdentifier'] + ')'
             # function fnName
             # (arg1, arg2)
-            + '\\s*\\(\\s*(?P<args>.*)\)',
+            + '\\s*\\(\\s*(?P<args>.*)\\)',
             line
         )
         if not res:
@@ -775,6 +799,7 @@ class JsdocsPHP(JsdocsParser):
             if (argType and argVal):
 
                 # function fnc_name(array $x = array())
+                # function fnc_name(array $x = [])
                 argValType = self.guessTypeFromValue(argVal)
                 if argType == argValType:
                     return argType
@@ -826,7 +851,7 @@ class JsdocsPHP(JsdocsParser):
             return "float" if '.' in val else 'int' if shortPrimitives else 'integer'
         if val[0] == '"' or val[0] == "'":
             return "string"
-        if val[:5] == 'array':
+        if val[:5] == 'array' or (val[0] == '[' and val[-1] == ']'):
             return "array"
         if val.lower() in ('true', 'false', 'filenotfound'):
             return 'bool' if shortPrimitives else 'boolean'
@@ -861,7 +886,7 @@ class JsdocsCPP(JsdocsParser):
             'typeTag': 'param',
             'commentCloser': ' */',
             'fnIdentifier': identifier,
-            'varIdentifier': '(' + identifier + ')\\s*(?:\\[(?:' + identifier + ')?\\]|\\((?:(?:\\s*,\\s*)?[a-z]+)+\\s*\\))?',
+            'varIdentifier': '(' + identifier + ')\\s*(?:\\[(?:' + identifier + r')?\]|\((?:(?:\s*,\s*)?[a-z]+)+\s*\))*',
             'fnOpener': identifier + '\\s+' + identifier + '\\s*\\(',
             'bool': 'bool',
             'function': 'function'
@@ -1151,13 +1176,15 @@ class JsdocsJava(JsdocsParser):
         throws = group_dict["throws"] or ""
 
         arg_list = []
-        for arg in full_args.split(","):
+        for arg in splitByCommas(full_args):
             arg_list.append(arg.strip().split(" ")[-1])
         args = ",".join(arg_list)
+
         throws_list = []
-        for arg in throws.split(","):
+        for arg in splitByCommas(throws):
             throws_list.append(arg.strip().split(" ")[-1])
         throws = ",".join(throws_list)
+
         return (name, args, retval, throws)
 
     def parseVar(self, line):
@@ -1320,7 +1347,7 @@ class JsdocsDecorateCommand(sublime_plugin.TextCommand):
                 leadingWS = leadingWS - tabCount
                 maxLength = max(maxLength, lineRegion.size())
 
-            lineLength = maxLength - leadingWS
+            lineLength = maxLength - (leadingWS + tabCount)
             leadingWS = tabCount * "\t" + " " * leadingWS
             v.insert(edit, sel.end(), leadingWS + "/" * (lineLength + 3) + "\n")
 
@@ -1360,8 +1387,7 @@ class JsdocsReparse(sublime_plugin.TextCommand):
 
         v = self.view
         v.run_command('clear_fields')
-        v.run_command('expand_selection', {'to': 'scope'})
-        sel = v.sel()[0]
+        sel = getDocBlockRegion(v, v.sel()[0].begin())
 
         # escape string, so variables starting with $ won't be removed
         text = escape(v.substr(sel))
@@ -1408,17 +1434,16 @@ class JsdocsWrapLines(sublime_plugin.TextCommand):
         spacerBetweenSections = settings.get("jsdocs_spacer_between_sections") == True
         spacerBetweenDescriptionAndTags = settings.get("jsdocs_spacer_between_sections") == "after_description"
 
-        v.run_command('expand_selection', {'to': 'scope'})
+        dbRegion = getDocBlockRegion(v, v.sel()[0].begin())
 
         # find the first word
-        startPoint = v.find("\n\\s*\\* ", v.sel()[0].begin()).begin()
+        startPoint = v.find(r"\n\s*\* ", dbRegion.begin()).begin()
         # find the first tag, or the end of the comment
-        endPoint = v.find("\\s*\n\\s*\\*(/)", v.sel()[0].begin()).begin()
+        endPoint = v.find(r"\s*\n\s*\*(/)", dbRegion.begin()).begin()
 
         # replace the selection with this ^ new selection
         v.sel().clear()
         v.sel().add(sublime.Region(startPoint, endPoint))
-
         # get the description text
         text = v.substr(v.sel()[0])
 
@@ -1580,134 +1605,3 @@ class JsdocsTypescript(JsdocsParser):
             res = re.search('new (' + self.settings['fnIdentifier'] + ')', val)
             return res and res.group(1) or None
         return None
-
-# to run, enable jsdocs_development_mode and press Ctrl+K, Ctrl+T
-class JsdocsTests(sublime_plugin.WindowCommand):
-
-    def run(self):
-        import tests.javascript
-
-        # sublime.active_window().run_command('show_panel', panel='output.console')
-        self.window.run_command("show_panel", {"panel": "console"})
-        print ('\nDocBlockr tests')
-        print ('---------------')
-        for modName in tests.__dict__:
-            if not modName.startswith('__'):
-                mod = getattr(tests, modName)
-                mod = imp.reload(mod)
-                self.runTests(mod, modName)
-
-    def runTests(self, mod, modName):
-        successes = 0
-        failures = 0
-
-        helper = TestHelper(self.window)
-        helper.set_syntax(mod.syntax)
-
-        for member in mod.__dict__:
-            if member.startswith('test_'):
-                helper.startTest()
-                try:
-                    testFn = getattr(mod, member)
-                    ret = testFn(helper)
-                    expected = "\n".join(ret) if isinstance(ret, list) else ret
-
-                    assert isinstance(expected, str),  'Did not return a string to check'
-
-                    self.compare(helper.view, expected)
-                    self.report(member, modName, True)
-                    successes += 1
-                except AssertionError as e:
-                    self.report(member, modName, False, testFn, e.args[0])
-                    failures += 1
-                finally:
-                    helper.endTest()
-
-        helper.dispose()
-        print ('%s/%s passed.' % ( successes, successes + failures ))
-
-    def compare(self, view, expected):
-        delim = '|'
-        expectedRegion = None
-        checkRegions = delim in expected
-        if checkRegions:
-            # compare selections
-            (beforeSelection, d, tempAfter) = expected.partition(delim)
-            (selected, d, afterSelection) = tempAfter.partition(delim)
-            expectedRegion = sublime.Region(
-                len(beforeSelection),
-                len(beforeSelection) + (len(selected) if afterSelection else 0)
-            )
-            expected = beforeSelection + selected + afterSelection
-
-        actual = view.substr(sublime.Region(0, view.size()))
-
-        assert actual == expected, "Actual:\n%s\nExpected:\n%s" % (actual, expected)
-
-        if checkRegions:
-            actualRegion = view.sel()[0]
-            assert actualRegion == expectedRegion, \
-                "Selection doesn't match. Actual %s, expected %s" % (actualRegion, expectedRegion)
-
-    def report(self, testName, modName, success, testFn=None, errorMessage=''):
-        print ("[%s] %s: %s %s%s" % (
-            " OK " if success else "FAIL",
-            modName,
-            testName[5:].replace('_', ' ').title(),
-            "" if success else "-- " + testFn.func_doc + '.\n',
-            errorMessage
-        ))
-
-class TestHelper():
-    def __init__(self, window):
-        self.window = window
-        self.view = self.window.new_file()
-        self.cursorPos = 0
-        self.savedPos = 0
-
-    def dispose(self):
-        self.window.run_command('close')
-
-    def set_syntax(self, file):
-        self.view.set_syntax_file(file)
-
-    def startTest(self):
-        self.cursorPos = 0
-        self.edit = self.view.begin_edit()
-
-    def endTest(self):
-        self.view.end_edit(self.edit)
-        self.view.run_command('undo')
-        self.edit = None
-
-    def insert(self, text, pos = -1):
-        if pos == -1:
-            pos = self.cursorPos
-
-        if isinstance(text, list):
-            text = '\n'.join(text)
-
-        if '|' in text:
-            (before, __, after) = text.partition('|')
-            adjustCursor = len(before)
-            text = before + after
-        else:
-            adjustCursor = len(text)
-
-        self.view.insert(self.edit, pos, text)
-        self.cursorPos = pos + adjustCursor
-        self.setCursor(self.cursorPos)
-
-    def run(self, cmdName = 'jsdocs'):
-        self.view.run_command(cmdName)
-
-    def saveCursor(self):
-        self.savedPos = self.cursorPos
-
-    def restoreCursor(self):
-        self.setCursor(self.savedPos)
-
-    def setCursor(self, pos):
-        self.view.sel().clear()
-        self.view.sel().add(pos)
-
