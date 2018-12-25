@@ -18,33 +18,9 @@ repo, the main development branch is `develop` and the stable 'production'
 branch is `master`. Please remember to base your branch from `develop` and issue
 the pull request back to that branch.
 
-## Show your love
-
-[![Click here to lend your support to: DocBlockr and make a donation at pledgie.com!](https://pledgie.com/campaigns/16316.png?skin_name=chrome)](http://pledgie.com/campaigns/16316)
-
 ## Changelog
 
-- **v2.14.1**, *17 Aug 2015*
-  - Fix deindentation bug with reparsing doc blocks
-- **v2.14.0**, *15 Jun 2015*
-  - Adds `jsdocs_function_description` option (thanks to [Gerard Roche](https://github.com/gerardroche))
-  - Better handling of parser errors (thanks to Gerard Roche)
-- **v2.13.3**, *4 Jun 2015*
-  - PHP array shorthand is identified correctly (thanks to [Gerard Roche](https://github.com/gerardroche))
-  - Decorating comments when using tabs for indentation works better (thanks to [Jack Cherng](https://github.com/jfcherng))
-- **v2.13.2**, *30 Mar 2015*
-  - Updated PHPDoc autocompletions to align with the new spec (thanks to [Gerard Roche](https://github.com/gerardroche))
-  - Properly handle the case when commas appear inside a type name in Java
-  - Added link to README in the preferences menu
-- **v2.13.1**, *29 Mar 2015*
-  - Adds support for Apex language (thanks @michacom)
-  - Fixes identifying multidimensional arrays in C/C++
-  - Fixes reformatting and reparsing docblocks in Java
-  - Adds options to disable:
-    - opening an inline docblock with space (`jsdocs_quick_open_inline`)
-    - inline comment decoration (`jsdocs_decorate`)
-
-Older history can be found in [the history file][history].
+See [the history file][history].
 
 ## Usage
 
@@ -100,7 +76,7 @@ DocBlockr will also try to determine the type of the variable from its name. Var
 
 ```js
 {
-    "jsdocs_notation_map": [
+    "docblockr.notation_map": [
         {
             "prefix": "b", /* a prefix, matches only if followed by an underscore or A-Z */
             "type": "bool" /* translates to "Boolean" in javascript, "bool" in PHP */
@@ -152,7 +128,7 @@ If you write a double-slash comment and then press `Ctrl+Enter`, DocBlockr will 
     // Foo bar baz //
     /////////////////
 
-This can be disabled by changing the `jsdocs_decorate` setting to `false`.
+This can be disabled by changing the `docblockr.decorate` setting to `false`.
 
 ### Reparsing a DocBlock
 
@@ -182,21 +158,19 @@ Finally, typing `@` inside a docblock will show a completion list for all tags s
 
 You can access the configuration settings by selecting `Preferences -> Package Settings -> DocBlockr`.
 
-*The `jsdocs_*` prefix is a legacy from days gone by...*
+- `docblockr.indentation_spaces` *(Number)* The number of spaces to indent after the leading asterisk.
 
-- `jsdocs_indentation_spaces` *(Number)* The number of spaces to indent after the leading asterisk.
-
-        // jsdocs_indentation_spaces = 1
+        // docblockr.indentation_spaces = 1
         /**
          * foo
          */
 
-        // jsdocs_indentation_spaces = 5
+        // docblockr.indentation_spaces = 5
         /**
          *     foo
          */
 
-- `jsdocs_align_tags` *(String)* Whether the words following the tags should align. Possible values are `'no'`, `'shallow'` and `'deep'`
+- `docblockr.align_tags` *(String)* Whether the words following the tags should align. Possible values are `'no'`, `'shallow'` and `'deep'`
 
     > For backwards compatibility, `false` is equivalent to `'no'`, `true` is equivalent to `'shallow'`
 
@@ -213,9 +187,9 @@ You can access the configuration settings by selecting `Preferences -> Package S
         @property {Number}        blahblah   desc3
 
 
-- `jsdocs_extra_tags` *(Array.String)* An array of strings, each representing extra boilerplate comments to add to *functions*. These can also include arbitrary text (not just tags).
+- `docblockr.extra_tags` *(Array.String)* An array of strings, each representing extra boilerplate comments to add to *functions*. These can also include arbitrary text (not just tags).
 
-        // jsdocs_extra_tags = ['This is a cool function', '@author nickf', '@version ${1:[version]}']
+        // docblockr.extra_tags = ['This is a cool function', '@author nickf', '@version ${1:[version]}']
         /**<<enter>>
         function foo (x) {}
 
@@ -231,7 +205,7 @@ You can access the configuration settings by selecting `Preferences -> Package S
 
     Basic variable substitution is supported here for the variables `date` and `datetime`, wrapped in double curly brackets.
 
-        // jsdocs_extra_tags = ['@date {{date}}', '@anotherdate {{datetime}}']
+        // docblockr.extra_tags = ['@date {{date}}', '@anotherdate {{datetime}}']
         /**<<enter>>
         function foo() {}
 
@@ -242,37 +216,37 @@ You can access the configuration settings by selecting `Preferences -> Package S
          * @return   {[type]}
          */
 
-- `jsdocs_extra_tags_go_after` *(Boolean)* If true, the extra tags are placed at the end of the block (after param/return). Default: `false`
+- `docblockr.extra_tags_go_after` *(Boolean)* If true, the extra tags are placed at the end of the block (after param/return). Default: `false`
 
-- `jsdocs_extend_double_slash` *(Boolean)* Whether double-slash comments should be extended. An example of this feature is described above. Default: `true`
+- `docblockr.extend_double_slash` *(Boolean)* Whether double-slash comments should be extended. An example of this feature is described above. Default: `true`
 
-- `jsdocs_deep_indent` *(Boolean)* Whether pressing tab at the start of a line in docblock should indent to match the previous line's description field. An example of this feature is described above. Default: `true`
+- `docblockr.deep_indent` *(Boolean)* Whether pressing tab at the start of a line in docblock should indent to match the previous line's description field. An example of this feature is described above. Default: `true`
 
-- `jsdocs_notation_map` *(Array)* An array of notation objects. Each notation object must define either a `prefix` OR a `regex` property, and a `type` property.
+- `docblockr.notation_map` *(Array)* An array of notation objects. Each notation object must define either a `prefix` OR a `regex` property, and a `type` property.
 
-- `jsdocs_return_tag` *(String)* The text which should be used for a `@return` tag. By default, `@return` is used, however this can be changed to `@returns` if you use that style.
+- `docblockr.return_tag` *(String)* The text which should be used for a `@return` tag. By default, `@return` is used, however this can be changed to `@returns` if you use that style.
 
-- `jsdocs_spacer_between_sections` *(Boolean|String)* If true, then extra blank lines are inserted between the sections of the docblock. If set to `"after_description"` then a spacer will only be added between the description and the first tag. Default: `false`.
+- `docblockr.spacer_between_sections` *(Boolean|String)* If true, then extra blank lines are inserted between the sections of the docblock. If set to `"after_description"` then a spacer will only be added between the description and the first tag. Default: `false`.
 
-- `jsdocs_indentation_spaces_same_para` *(Number)* Described above in the *Reformatting paragraphs* section. Default: `1`
+- `docblockr.indentation_spaces_same_para` *(Number)* Described above in the *Reformatting paragraphs* section. Default: `1`
 
-- `jsdocs_autoadd_method_tag` *(Boolean)* Add a `@method` tag to docblocks of functions. Default: `false`
+- `docblockr.autoadd_method_tag` *(Boolean)* Add a `@method` tag to docblocks of functions. Default: `false`
 
-- `jsdocs_simple_mode` *(Boolean)* If true, DocBlockr won't add a template when creating a doc block before a function or variable. Useful if you don't want to write Javadoc-style, but still want your editor to help when writing block comments. Default: `false`
+- `docblockr.simple_mode` *(Boolean)* If true, DocBlockr won't add a template when creating a doc block before a function or variable. Useful if you don't want to write Javadoc-style, but still want your editor to help when writing block comments. Default: `false`
 
-- `jsdocs_lower_case_primitives` *(Boolean)* If true, primitive data types are added in lower case, eg "number" instead of "Number". Default: `false`
+- `docblockr.lower_case_primitives` *(Boolean)* If true, primitive data types are added in lower case, eg "number" instead of "Number". Default: `false`
 
-- `jsdocs_short_primitives` *(Boolean)* If true, the primitives `Boolean` and `Integer` are shortened to `Bool` and `Int`. Default: `false`
+- `docblockr.short_primitives` *(Boolean)* If true, the primitives `Boolean` and `Integer` are shortened to `Bool` and `Int`. Default: `false`
 
-- `jsdocs_newline_after_block` *(Boolean)* If true, an extra line break is added after the end of a docblock to separate it from the code. Default `false`
+- `docblockr.newline_after_block` *(Boolean)* If true, an extra line break is added after the end of a docblock to separate it from the code. Default `false`
 
-- `jsdocs_param_name` *(Boolean)* If true, the name of a function parameter is added to the template. If false, it is omitted. Default: `true`
+- `docblockr.param_name` *(Boolean)* If true, the name of a function parameter is added to the template. If false, it is omitted. Default: `true`
 
-- `jsdocs_decorate` *(Boolean)* If false, disable decoration of single line comments with <kbd>Ctrl+Enter</kbd>. Default: `true`
+- `docblockr.decorate` *(Boolean)* If false, disable decoration of single line comments with <kbd>Ctrl+Enter</kbd>. Default: `true`
 
-- `jsdocs_quick_open_inline` *(Boolean)* If true, an inline docblock will be opened when pressing <kbd>Space</kbd> after an opener (`/**`). When set to `false`, these can be opened by pressing <kbd>Shift+Enter</kbd>. Default: `true`
+- `docblockr.quick_open_inline` *(Boolean)* If true, an inline docblock will be opened when pressing <kbd>Space</kbd> after an opener (`/**`). When set to `false`, these can be opened by pressing <kbd>Shift+Enter</kbd>. Default: `true`
 
-- `jsdocs_function_description` *(Boolean)* If true, a 'description' line will be added for functions. Default: `true`
+- `docblockr.function_description` *(Boolean)* If true, a 'description' line will be added for functions. Default: `true`
 
 ## Contributors
 

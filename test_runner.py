@@ -23,13 +23,13 @@ class ViewTestCase(unittest.TestCase):
         # TODO there's probably a better way to initialise the testcase default settings
         settings = self.view.settings()
         settings.set('auto_indent', False)
-        settings.set('jsdocs_lower_case_primitives', False)
-        settings.set('jsdocs_param_description', True)
-        settings.set('jsdocs_per_section_indent', False)
-        settings.set('jsdocs_return_description', True)
-        settings.set('jsdocs_short_primitives', False)
-        settings.set('jsdocs_spacer_between_sections', False)
-        settings.set('jsdocs_function_description', True)
+        settings.set('docblockr.lower_case_primitives', False)
+        settings.set('docblockr.param_description', True)
+        settings.set('docblockr.per_section_indent', False)
+        settings.set('docblockr.return_description', True)
+        settings.set('docblockr.short_primitives', False)
+        settings.set('docblockr.spacer_between_sections', False)
+        settings.set('docblockr.function_description', True)
 
         if int(sublime.version()) < 3000:
             self.edit = self.view.begin_edit()
@@ -114,7 +114,7 @@ class TestJavaScript(ViewTestCase):
 
     def test_parameters_are_added_to_function_template_with_description_disabled(self):
         self.set_view_content('/**|\nfunction foo (bar, baz) {')
-        self.view.settings().set('jsdocs_function_description', False)
+        self.view.settings().set('docblockr.function_description', False)
         self.run_doc_blockr()
         self.assertDocBlockrResult([
             '/**',
@@ -127,8 +127,8 @@ class TestJavaScript(ViewTestCase):
 
     def test_parameters_are_added_to_function_template_with_description_disabled_and_spacers_between_sections(self):
         self.set_view_content('/**|\nfunction foo (bar, baz) {')
-        self.view.settings().set('jsdocs_function_description', False)
-        self.view.settings().set('jsdocs_spacer_between_sections', True)
+        self.view.settings().set('docblockr.function_description', False)
+        self.view.settings().set('docblockr.spacer_between_sections', True)
         self.run_doc_blockr()
         self.assertDocBlockrResult([
             '/**',
@@ -142,8 +142,8 @@ class TestJavaScript(ViewTestCase):
 
     def test_parameters_are_added_to_function_template_with_description_disabled_and_spacer_after_description_isset(self):
         self.set_view_content('/**|\nfunction foo (bar, baz) {')
-        self.view.settings().set('jsdocs_function_description', False)
-        self.view.settings().set('jsdocs_spacer_between_sections', 'after_description')
+        self.view.settings().set('docblockr.function_description', False)
+        self.view.settings().set('docblockr.spacer_between_sections', 'after_description')
         self.run_doc_blockr()
         self.assertDocBlockrResult([
             '/**',
@@ -237,7 +237,7 @@ class TestPHP(ViewTestCase):
 
     def get_syntax_file(self):
         # Allows overriding with custom syntax
-        php_syntax_file = self.view.settings().get('doc_blockr_tests_php_syntax_file')
+        php_syntax_file = self.view.settings().get('docblockr.tests_php_syntax_file')
         if not php_syntax_file:
             return 'Packages/PHP/PHP.tmLanguage'
         else:
@@ -374,7 +374,7 @@ class TestPHP(ViewTestCase):
 
     def test_optional_function_description(self):
         self.set_view_content("<?php\n/**|\nfunction fname($a) {}")
-        self.view.settings().set('jsdocs_function_description', False)
+        self.view.settings().set('docblockr.function_description', False)
         self.run_doc_blockr()
         self.assertDocBlockrResult([
             "<?php",
@@ -387,8 +387,8 @@ class TestPHP(ViewTestCase):
 
     def test_optional_function_description_with_spacers_between_sections(self):
         self.set_view_content("<?php\n/**|\nfunction fname($a) {}")
-        self.view.settings().set('jsdocs_function_description', False)
-        self.view.settings().set('jsdocs_spacer_between_sections', True)
+        self.view.settings().set('docblockr.function_description', False)
+        self.view.settings().set('docblockr.spacer_between_sections', True)
         self.run_doc_blockr()
         self.assertDocBlockrResult([
             "<?php",
@@ -402,8 +402,8 @@ class TestPHP(ViewTestCase):
 
     def test_optional_function_description_with_spacer_after_description_set_to_true(self):
         self.set_view_content("<?php\n/**|\nfunction fname($a) {}")
-        self.view.settings().set('jsdocs_function_description', False)
-        self.view.settings().set('jsdocs_spacer_between_sections', 'after_description')
+        self.view.settings().set('docblockr.function_description', False)
+        self.view.settings().set('docblockr.spacer_between_sections', 'after_description')
         self.run_doc_blockr()
         self.assertDocBlockrResult([
             "<?php",

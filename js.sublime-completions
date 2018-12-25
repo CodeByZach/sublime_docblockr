@@ -28,7 +28,7 @@
     { "trigger" : "@extensionfor",  "contents": "@extensionfor ${1:[class]}"},
     { "trigger" : "@extension_for", "contents": "@extension_for ${1:[class]}"},
     { "trigger" : "@field",         "contents": ""},
-    { "trigger" : "@fileOverview",  "contents": "@fileOverview ${1:[description]}"},
+    { "trigger" : "@fileoverview",  "contents": "@fileoverview ${1:[description]}"},
     { "trigger" : "@final",         "contents": ""},
     { "trigger" : "@for",           "contents": "@for ${1:[class]}"},
     { "trigger" : "@function",      "contents": ""},

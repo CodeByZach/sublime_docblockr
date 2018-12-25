@@ -1,10 +1,10 @@
 [
-    // run tests. requires jsdocs_development_mode to be on
+    // run tests. requires docblockr.development_mode to be on
     {
       "keys": ["ctrl+k", "ctrl+t"],
       "command": "run_doc_blockr_tests",
       "context": [
-        { "key": "setting.jsdocs_development_mode", "operator": "equal", "operand": true }
+        { "key": "setting.docblockr.development_mode", "operator": "equal", "operand": true }
       ]
     }
 ]
