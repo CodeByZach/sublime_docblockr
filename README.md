@@ -18,10 +18,6 @@ repo, the main development branch is `develop` and the stable 'production'
 branch is `master`. Please remember to base your branch from `develop` and issue
 the pull request back to that branch.
 
-## Show your love
-
-[![Click here to lend your support to: DocBlockr and make a donation at pledgie.com!](https://pledgie.com/campaigns/16316.png?skin_name=chrome)](http://pledgie.com/campaigns/16316)
-
 ## Changelog
 
 - **v2.14.1**, *17 Aug 2015*
