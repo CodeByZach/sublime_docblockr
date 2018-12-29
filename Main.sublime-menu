@@ -18,9 +18,7 @@
                                     "default": "{\n$0\n}\n"
                                 }
                             },
-                            {
-                                "caption": "-"
-                            },
+                            { "caption": "-" },
                             {
                                 "caption": "README",
                                 "command": "open_file", "args":
