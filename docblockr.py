@@ -438,10 +438,10 @@ class DocBlockrParser(object):
 
                 format_str = "@param %s%s"
 
-				typeInfoSettings = self.viewSettings.get("docblockr.type_info")
-				typeInfoName = escape(argType or self.guessTypeFromName(argName) or "[type]")
-				if typeInfoSettings[typeInfoName]:
-					format_str += " "+typeInfoSettings[typeInfoName]
+                typeInfoSettings = self.viewSettings.get("docblockr.type_info")
+                typeInfoName = escape(argType or self.guessTypeFromName(argName) or "[type]")
+                if typeInfoSettings[typeInfoName]:
+                    format_str += " "+typeInfoSettings[typeInfoName]
                 elif (self.viewSettings.get('docblockr.param_description')):
                     format_str += " ${1:[description]}"
 
