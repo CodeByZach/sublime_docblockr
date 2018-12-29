@@ -56,7 +56,7 @@ class ViewTestCase(unittest.TestCase):
         return self.view.substr(sublime.Region(0, self.view.size()))
 
     def run_doc_blockr(self):
-        self.view.run_command('jsdocs')
+        self.view.run_command('docblockr')
 
     def assertDocBlockrResult(self, expected):
         if isinstance(expected, list):
