@@ -72,7 +72,7 @@ Press <kbd>space</kbd> or <kbd>shift</kbd>+<kbd>enter</kbd> after an opening `/*
 
 ![](http://spadgos.github.io/sublime-jsdocs/images/vars.gif)
 
-DocBlockr will also try to determine the type of the variable from its name. Variables starting with `is` or `has` are assumed to be booleans, and `callback`, `cb`, `done`, `fn`, and `next` are assumed to be functions. If you use your own variable naming system, (e.g. hungarian notation: booleans all start with `b`, arrays start with `arr`), you can define these rules yourself. Use the `jsdocs_notation_map` setting, example:
+DocBlockr will also try to determine the type of the variable from its name. Variables starting with `is` or `has` are assumed to be booleans, and `callback`, `cb`, `done`, `fn`, and `next` are assumed to be functions. If you use your own variable naming system, (e.g. hungarian notation: booleans all start with `b`, arrays start with `arr`), you can define these rules yourself. Use the `docblockr.notation_map` setting, example:
 
 ```js
 {
@@ -89,7 +89,7 @@ DocBlockr will also try to determine the type of the variable from its name. Var
 }
 ```
 
-The notation map can also be used to add arbitrary tags, according to your own code conventions. For example, if your conventions state that functions beginning with an underscore are private, you could add this to the `jsdocs_notation_map`:
+The notation map can also be used to add arbitrary tags, according to your own code conventions. For example, if your conventions state that functions beginning with an underscore are private, you could add this to the `docblockr.notation_map`:
 
 ```json
 {
@@ -138,7 +138,7 @@ With DocBlockr, you can reparse a comment and reactivate the fields by pressing 
 
 ### Reformatting paragraphs
 
-Inside a comment block, hit `Alt+Q` to wrap the lines to make them fit within your rulers. If you would like subsequent lines in a paragraph to be indented, you can adjust the `jsdocs_indentation_spaces_same_para` setting. For example, a value of `3` might look like this:
+Inside a comment block, hit `Alt+Q` to wrap the lines to make them fit within your rulers. If you would like subsequent lines in a paragraph to be indented, you can adjust the `docblockr.indentation_spaces_same_para` setting. For example, a value of `3` might look like this:
 
     /**
      * Duis sed arcu non tellus eleifend ullamcorper quis non erat. Curabitur
