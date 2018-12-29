@@ -224,6 +224,8 @@ You can access the configuration settings by selecting `Preferences -> Package S
 
 - `docblockr.notation_map` *(Array)* An array of notation objects. Each notation object must define either a `prefix` OR a `regex` property, and a `type` property.
 
+- `docblockr.type_info` *(Array)* Customize @param description based on type, should be type: description, e.g. "array": "${1:[descriptiona]}".
+
 - `docblockr.return_tag` *(String)* The text which should be used for a `@return` tag. By default, `@return` is used, however this can be changed to `@returns` if you use that style.
 
 - `docblockr.spacer_between_sections` *(Boolean|String)* If true, then extra blank lines are inserted between the sections of the docblock. If set to `"after_description"` then a spacer will only be added between the description and the first tag. Default: `false`.
