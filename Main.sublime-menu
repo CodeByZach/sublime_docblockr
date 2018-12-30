@@ -14,7 +14,7 @@
                             {
                                 "caption": "Settings",
                                 "command": "edit_settings", "args": {
-                                    "base_file": "${packages}/DocBlockr/DocBlockr.sublime-settings",
+                                    "base_file": "${packages}/DocBlockr/Base File.sublime-settings",
                                     "default": "{\n$0\n}\n"
                                 }
                             },
