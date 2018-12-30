@@ -178,10 +178,10 @@ class DocBlockrCommand(sublime_plugin.TextCommand):
         # drop trailing '*/'
         self.trailingString = escape(re.sub('\\s*\\*\\/\\s*$', '', self.trailingString))
 
-        self.indentSpaces = " " * max(0, self.settings.get("docblockr.indentation_spaces", 1))
+        self.indentSpaces = " " * max(0, self.settings.get("docblockr_indentation_spaces", 1))
         self.prefix = "*"
 
-        settingsAlignTags = self.settings.get("docblockr.align_tags", 'deep')
+        settingsAlignTags = self.settings.get("docblockr_align_tags", 'deep')
         self.deepAlignTags = settingsAlignTags == 'deep'
         self.shallowAlignTags = settingsAlignTags in ('shallow', True)
 
@@ -215,7 +215,7 @@ class DocBlockrCommand(sublime_plugin.TextCommand):
             else:
                 return " $0 */"
         else:
-            return self.createSnippet(out) + ('\n' if self.settings.get('docblockr.newline_after_block') else '')
+            return self.createSnippet(out) + ('\n' if self.settings.get('docblockr_newline_after_block') else '')
 
     def alignTags(self, out):
         def outputWidth(str):
@@ -229,8 +229,8 @@ class DocBlockrCommand(sublime_plugin.TextCommand):
         widths = []
 
         # Grab the return tag if required.
-        if self.settings.get('docblockr.per_section_indent'):
-            returnTag = self.settings.get('docblockr.return_tag') or '@return'
+        if self.settings.get('docblockr_per_section_indent'):
+            returnTag = self.settings.get('docblockr_return_tag') or '@return'
         else:
             returnTag = False
 
@@ -259,7 +259,7 @@ class DocBlockrCommand(sublime_plugin.TextCommand):
         maxWidths = dict(enumerate(maxWidths))
 
         # Minimum spaces between line columns
-        minColSpaces = self.settings.get('docblockr.min_spaces_between_columns', 1)
+        minColSpaces = self.settings.get('docblockr_min_spaces_between_columns', 1)
 
         for index, line in enumerate(out):
             # format the spacing of columns, but ignore the author tag. (See #197)
@@ -309,18 +309,18 @@ class DocBlockrCommand(sublime_plugin.TextCommand):
         snippet = ""
         closer = self.parser.settings['commentCloser']
         if out:
-            if self.settings.get('docblockr.spacer_between_sections') == True:
+            if self.settings.get('docblockr_spacer_between_sections') == True:
                 lastTag = None
                 for idx, line in enumerate(out):
                     res = re.match("^\\s*@([a-zA-Z]+)", line)
                     if res and (lastTag != res.group(1)):
-                        if self.settings.get('docblockr.function_description') == False:
+                        if self.settings.get('docblockr_function_description') == False:
                             if lastTag != None:
                                 out.insert(idx, "")
                         else:
                             out.insert(idx, "")
                         lastTag = res.group(1)
-            elif self.settings.get('docblockr.spacer_between_sections') == 'after_description' and self.settings.get('docblockr.function_description'):
+            elif self.settings.get('docblockr_spacer_between_sections') == 'after_description' and self.settings.get('docblockr_function_description'):
                 lastLineIsTag = False
                 for idx, line in enumerate(out):
                     res = re.match("^\\s*@([a-zA-Z]+)", line)
@@ -355,7 +355,7 @@ class DocBlockrParser(object):
         return self.nameOverride
 
     def parse(self, line):
-        if self.viewSettings.get('docblockr.simple_mode'):
+        if self.viewSettings.get('docblockr_simple_mode'):
             return None
 
         try:
@@ -414,13 +414,13 @@ class DocBlockrParser(object):
             out.append('@private')
             return out
 
-        extraTagAfter = self.viewSettings.get("docblockr.extra_tags_go_after") or False
+        extraTagAfter = self.viewSettings.get("docblockr_extra_tags_go_after") or False
 
         description = self.getNameOverride() or ('[%s%sdescription]' % (escape(name), ' ' if name else ''))
-        if self.viewSettings.get('docblockr.function_description'):
+        if self.viewSettings.get('docblockr_function_description'):
             out.append("${1:%s}" % description)
 
-        if (self.viewSettings.get("docblockr.autoadd_method_tag") is True):
+        if (self.viewSettings.get("docblockr_autoadd_method_tag") is True):
             out.append("@%s %s" % (
                 "method",
                 escape(name)
@@ -438,16 +438,16 @@ class DocBlockrParser(object):
 
                 format_str = "@param %s%s"
 
-                typeInfoSettings = self.viewSettings.get("docblockr.type_info")
+                typeInfoSettings = self.viewSettings.get("docblockr_type_info")
                 typeInfoName = escape(argType or self.guessTypeFromName(argName) or "[type]")
                 if typeInfoSettings[typeInfoName]:
                     format_str += " "+typeInfoSettings[typeInfoName]
-                elif (self.viewSettings.get('docblockr.param_description')):
+                elif (self.viewSettings.get('docblockr_param_description')):
                     format_str += " ${1:[description]}"
 
                 out.append(format_str % (
                     typeInfo,
-                    escape(argName) if self.viewSettings.get('docblockr.param_name') else ''
+                    escape(argName) if self.viewSettings.get('docblockr_param_name') else ''
                 ))
 
         # return value type might be already available in some languages but
@@ -462,17 +462,17 @@ class DocBlockrParser(object):
                     "}" if self.settings['curlyTypes'] else ""
                 )
             format_args = [
-                self.viewSettings.get('docblockr.return_tag') or '@return',
+                self.viewSettings.get('docblockr_return_tag') or '@return',
                 typeInfo
             ]
 
-            if (self.viewSettings.get('docblockr.return_description')):
+            if (self.viewSettings.get('docblockr_return_description')):
                 format_str = "%s%s %s${1:[description]}"
                 third_arg = ""
 
                 # the extra space here is so that the description will align with the param description
-                if args and self.viewSettings.get('docblockr.align_tags') == 'deep':
-                    if not self.viewSettings.get('docblockr.per_section_indent'):
+                if args and self.viewSettings.get('docblockr_align_tags') == 'deep':
+                    if not self.viewSettings.get('docblockr_per_section_indent'):
                         third_arg = " "
 
                 format_args.append(third_arg)
@@ -530,7 +530,7 @@ class DocBlockrParser(object):
         return arg
 
     def addExtraTags(self, out):
-        extraTags = self.viewSettings.get('docblockr.extra_tags', [])
+        extraTags = self.viewSettings.get('docblockr_extra_tags', [])
         if (len(extraTags) > 0):
             out.extend(extraTags)
 
@@ -559,7 +559,7 @@ class DocBlockrParser(object):
             elif 'regex' in rule:
                 return re.search(rule['regex'], name)
 
-        return list(filter(checkMatch, self.viewSettings.get('docblockr.notation_map', [])))
+        return list(filter(checkMatch, self.viewSettings.get('docblockr_notation_map', [])))
 
     def getDefinition(self, view, pos):
         """
@@ -611,7 +611,7 @@ class DocBlockrJavascript(DocBlockrParser):
             # curly brackets around the type information
             "curlyTypes": True,
             'typeInfo': True,
-            "typeTag": self.viewSettings.get('docblockr.override_js_var') or "type",
+            "typeTag": self.viewSettings.get('docblockr_override_js_var') or "type",
             # technically, they can contain all sorts of unicode, but w/e
             "varIdentifier": identifier,
             "fnIdentifier":  identifier,
@@ -723,19 +723,19 @@ class DocBlockrJavascript(DocBlockrParser):
         out = super(DocBlockrJavascript, self).getMatchingNotations(name)
         if name and name[0] == '*':
             # if '@returns' is preferred, then also use '@yields'. Otherwise, '@return' and '@yield'
-            yieldTag = '@yield' + ('s' if self.viewSettings.get('docblockr.return_tag', '_')[-1] == 's' else '')
-            description = ' ${1:[description]}' if self.viewSettings.get('docblockr.return_description', True) else ''
+            yieldTag = '@yield' + ('s' if self.viewSettings.get('docblockr_return_tag', '_')[-1] == 's' else '')
+            description = ' ${1:[description]}' if self.viewSettings.get('docblockr_return_description', True) else ''
             out.append({ 'tags': [
                 '%s {${1:[type]}}%s%s' % (
                     yieldTag,
-                    ' ' if self.viewSettings.get('docblockr.align_tags') == 'deep' and not self.viewSettings.get('docblockr.per_section_indent') else '',
+                    ' ' if self.viewSettings.get('docblockr_align_tags') == 'deep' and not self.viewSettings.get('docblockr_per_section_indent') else '',
                     description
             )]})
         return out
 
     def guessTypeFromValue(self, val):
-        lowerPrimitives = self.viewSettings.get('docblockr.lower_case_primitives') or False
-        shortPrimitives = self.viewSettings.get('docblockr.short_primitives') or False
+        lowerPrimitives = self.viewSettings.get('docblockr_lower_case_primitives') or False
+        shortPrimitives = self.viewSettings.get('docblockr_short_primitives') or False
         if is_numeric(val):
             return "number" if lowerPrimitives else "Number"
         if val[0] == '"' or val[0] == "'":
@@ -759,7 +759,7 @@ class DocBlockrJavascript(DocBlockrParser):
 
 class DocBlockrPHP(DocBlockrParser):
     def setupSettings(self):
-        shortPrimitives = self.viewSettings.get('docblockr.short_primitives') or False
+        shortPrimitives = self.viewSettings.get('docblockr_short_primitives') or False
         nameToken = '[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*'
         self.settings = {
             # curly brackets around the type information
@@ -857,7 +857,7 @@ class DocBlockrPHP(DocBlockrParser):
         return None
 
     def guessTypeFromValue(self, val):
-        shortPrimitives = self.viewSettings.get('docblockr.short_primitives') or False
+        shortPrimitives = self.viewSettings.get('docblockr_short_primitives') or False
         if is_numeric(val):
             return "float" if '.' in val else 'int' if shortPrimitives else 'integer'
         if val[0] == '"' or val[0] == "'":
@@ -874,7 +874,7 @@ class DocBlockrPHP(DocBlockrParser):
         return None
 
     def getFunctionReturnType(self, name, retval):
-        shortPrimitives = self.viewSettings.get('docblockr.short_primitives') or False
+        shortPrimitives = self.viewSettings.get('docblockr_short_primitives') or False
         if (name[:2] == '__'):
             if name in ('__construct', '__destruct', '__set', '__unset', '__wakeup'):
                 return None
@@ -948,7 +948,7 @@ class DocBlockrCoffee(DocBlockrParser):
         self.settings = {
             # curly brackets around the type information
             'curlyTypes': True,
-            'typeTag': self.viewSettings.get('docblockr.override_js_var') or "type",
+            'typeTag': self.viewSettings.get('docblockr_override_js_var') or "type",
             'typeInfo': True,
             # technically, they can contain all sorts of unicode, but w/e
             'varIdentifier': identifier,
@@ -993,7 +993,7 @@ class DocBlockrCoffee(DocBlockrParser):
         return (res.group('name'), res.group('val').strip())
 
     def guessTypeFromValue(self, val):
-        lowerPrimitives = self.viewSettings.get('docblockr.lower_case_primitives') or False
+        lowerPrimitives = self.viewSettings.get('docblockr_lower_case_primitives') or False
         if is_numeric(val):
             return "number" if lowerPrimitives else "Number"
         if val[0] == '"' or val[0] == "'":
@@ -1425,7 +1425,7 @@ class DocBlockrTrimAutoWhitespace(sublime_plugin.TextCommand):
         v = self.view
         lineRegion = v.line(v.sel()[0])
         line = v.substr(lineRegion)
-        spaces = max(0, sublime.load_settings("DocBlockr.sublime-settings").get("docblockr.indentation_spaces", 1))
+        spaces = max(0, sublime.load_settings("DocBlockr.sublime-settings").get("docblockr_indentation_spaces", 1))
         v.replace(edit, lineRegion, re.sub("^(\\s*\\*)\\s*$", "\\1\n\\1" + (" " * spaces), line))
 
 
@@ -1443,11 +1443,11 @@ class DocBlockrWrapLines(sublime_plugin.TextCommand):
         tabSize = settings.get('tab_size')
 
         wrapLength = rulers[0] if (len(rulers) > 0) else 80
-        numIndentSpaces = max(0, settings.get("docblockr.indentation_spaces", 1))
+        numIndentSpaces = max(0, settings.get("docblockr_indentation_spaces", 1))
         indentSpaces = " " * numIndentSpaces
-        indentSpacesSamePara = " " * max(0, settings.get("docblockr.indentation_spaces_same_para", numIndentSpaces))
-        spacerBetweenSections = settings.get("docblockr.spacer_between_sections") == True
-        spacerBetweenDescriptionAndTags = settings.get("docblockr.spacer_between_sections") == "after_description"
+        indentSpacesSamePara = " " * max(0, settings.get("docblockr_indentation_spaces_same_para", numIndentSpaces))
+        spacerBetweenSections = settings.get("docblockr_spacer_between_sections") == True
+        spacerBetweenDescriptionAndTags = settings.get("docblockr_spacer_between_sections") == "after_description"
 
         dbRegion = getDocBlockRegion(v, v.sel()[0].begin())
 
@@ -1603,7 +1603,7 @@ class DocBlockrTypescript(DocBlockrParser):
         return retval if retval != 'void' else None
 
     def guessTypeFromValue(self, val):
-        lowerPrimitives = self.viewSettings.get('docblockr.lower_case_primitives') or False
+        lowerPrimitives = self.viewSettings.get('docblockr_lower_case_primitives') or False
         if is_numeric(val):
             return "number" if lowerPrimitives else "Number"
         if val[0] == '"' or val[0] == "'":

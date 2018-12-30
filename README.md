@@ -72,11 +72,11 @@ Press <kbd>space</kbd> or <kbd>shift</kbd>+<kbd>enter</kbd> after an opening `/*
 
 ![](http://spadgos.github.io/sublime-jsdocs/images/vars.gif)
 
-DocBlockr will also try to determine the type of the variable from its name. Variables starting with `is` or `has` are assumed to be booleans, and `callback`, `cb`, `done`, `fn`, and `next` are assumed to be functions. If you use your own variable naming system, (e.g. hungarian notation: booleans all start with `b`, arrays start with `arr`), you can define these rules yourself. Use the `docblockr.notation_map` setting, example:
+DocBlockr will also try to determine the type of the variable from its name. Variables starting with `is` or `has` are assumed to be booleans, and `callback`, `cb`, `done`, `fn`, and `next` are assumed to be functions. If you use your own variable naming system, (e.g. hungarian notation: booleans all start with `b`, arrays start with `arr`), you can define these rules yourself. Use the `docblockr_notation_map` setting, example:
 
 ```js
 {
-    "docblockr.notation_map": [
+    "docblockr_notation_map": [
         {
             "prefix": "b", /* a prefix, matches only if followed by an underscore or A-Z */
             "type": "bool" /* translates to "Boolean" in javascript, "bool" in PHP */
@@ -89,7 +89,7 @@ DocBlockr will also try to determine the type of the variable from its name. Var
 }
 ```
 
-The notation map can also be used to add arbitrary tags, according to your own code conventions. For example, if your conventions state that functions beginning with an underscore are private, you could add this to the `docblockr.notation_map`:
+The notation map can also be used to add arbitrary tags, according to your own code conventions. For example, if your conventions state that functions beginning with an underscore are private, you could add this to the `docblockr_notation_map`:
 
 ```json
 {
@@ -128,7 +128,7 @@ If you write a double-slash comment and then press `Ctrl+Enter`, DocBlockr will 
     // Foo bar baz //
     /////////////////
 
-This can be disabled by changing the `docblockr.decorate` setting to `false`.
+This can be disabled by changing the `docblockr_decorate` setting to `false`.
 
 ### Reparsing a DocBlock
 
@@ -138,7 +138,7 @@ With DocBlockr, you can reparse a comment and reactivate the fields by pressing 
 
 ### Reformatting paragraphs
 
-Inside a comment block, hit `Alt+Q` to wrap the lines to make them fit within your rulers. If you would like subsequent lines in a paragraph to be indented, you can adjust the `docblockr.indentation_spaces_same_para` setting. For example, a value of `3` might look like this:
+Inside a comment block, hit `Alt+Q` to wrap the lines to make them fit within your rulers. If you would like subsequent lines in a paragraph to be indented, you can adjust the `docblockr_indentation_spaces_same_para` setting. For example, a value of `3` might look like this:
 
     /**
      * Duis sed arcu non tellus eleifend ullamcorper quis non erat. Curabitur
@@ -158,19 +158,19 @@ Finally, typing `@` inside a docblock will show a completion list for all tags s
 
 You can access the configuration settings by selecting `Preferences -> Package Settings -> DocBlockr`.
 
-- `docblockr.indentation_spaces` *(Number)* The number of spaces to indent after the leading asterisk.
+- `docblockr_indentation_spaces` *(Number)* The number of spaces to indent after the leading asterisk.
 
-        // docblockr.indentation_spaces = 1
+        // docblockr_indentation_spaces = 1
         /**
          * foo
          */
 
-        // docblockr.indentation_spaces = 5
+        // docblockr_indentation_spaces = 5
         /**
          *     foo
          */
 
-- `docblockr.align_tags` *(String)* Whether the words following the tags should align. Possible values are `'no'`, `'shallow'` and `'deep'`
+- `docblockr_align_tags` *(String)* Whether the words following the tags should align. Possible values are `'no'`, `'shallow'` and `'deep'`
 
     > For backwards compatibility, `false` is equivalent to `'no'`, `true` is equivalent to `'shallow'`
 
@@ -187,9 +187,9 @@ You can access the configuration settings by selecting `Preferences -> Package S
         @property {Number}        blahblah   desc3
 
 
-- `docblockr.extra_tags` *(Array.String)* An array of strings, each representing extra boilerplate comments to add to *functions*. These can also include arbitrary text (not just tags).
+- `docblockr_extra_tags` *(Array.String)* An array of strings, each representing extra boilerplate comments to add to *functions*. These can also include arbitrary text (not just tags).
 
-        // docblockr.extra_tags = ['This is a cool function', '@author nickf', '@version ${1:[version]}']
+        // docblockr_extra_tags = ['This is a cool function', '@author nickf', '@version ${1:[version]}']
         /**<<enter>>
         function foo (x) {}
 
@@ -205,7 +205,7 @@ You can access the configuration settings by selecting `Preferences -> Package S
 
     Basic variable substitution is supported here for the variables `date` and `datetime`, wrapped in double curly brackets.
 
-        // docblockr.extra_tags = ['@date {{date}}', '@anotherdate {{datetime}}']
+        // docblockr_extra_tags = ['@date {{date}}', '@anotherdate {{datetime}}']
         /**<<enter>>
         function foo() {}
 
@@ -216,39 +216,39 @@ You can access the configuration settings by selecting `Preferences -> Package S
          * @return   {[type]}
          */
 
-- `docblockr.extra_tags_go_after` *(Boolean)* If true, the extra tags are placed at the end of the block (after param/return). Default: `false`
+- `docblockr_extra_tags_go_after` *(Boolean)* If true, the extra tags are placed at the end of the block (after param/return). Default: `false`
 
-- `docblockr.extend_double_slash` *(Boolean)* Whether double-slash comments should be extended. An example of this feature is described above. Default: `true`
+- `docblockr_extend_double_slash` *(Boolean)* Whether double-slash comments should be extended. An example of this feature is described above. Default: `true`
 
-- `docblockr.deep_indent` *(Boolean)* Whether pressing tab at the start of a line in docblock should indent to match the previous line's description field. An example of this feature is described above. Default: `true`
+- `docblockr_deep_indent` *(Boolean)* Whether pressing tab at the start of a line in docblock should indent to match the previous line's description field. An example of this feature is described above. Default: `true`
 
-- `docblockr.notation_map` *(Array)* An array of notation objects. Each notation object must define either a `prefix` OR a `regex` property, and a `type` property.
+- `docblockr_notation_map` *(Array)* An array of notation objects. Each notation object must define either a `prefix` OR a `regex` property, and a `type` property.
 
-- `docblockr.type_info` *(Array)* Customize @param description based on type, should be type: description, e.g. "array": "${1:[descriptiona]}".
+- `docblockr_type_info` *(Array)* Customize @param description based on type, should be type: description, e.g. "array": "${1:[descriptiona]}".
 
-- `docblockr.return_tag` *(String)* The text which should be used for a `@return` tag. By default, `@return` is used, however this can be changed to `@returns` if you use that style.
+- `docblockr_return_tag` *(String)* The text which should be used for a `@return` tag. By default, `@return` is used, however this can be changed to `@returns` if you use that style.
 
-- `docblockr.spacer_between_sections` *(Boolean|String)* If true, then extra blank lines are inserted between the sections of the docblock. If set to `"after_description"` then a spacer will only be added between the description and the first tag. Default: `false`.
+- `docblockr_spacer_between_sections` *(Boolean|String)* If true, then extra blank lines are inserted between the sections of the docblock. If set to `"after_description"` then a spacer will only be added between the description and the first tag. Default: `false`.
 
-- `docblockr.indentation_spaces_same_para` *(Number)* Described above in the *Reformatting paragraphs* section. Default: `1`
+- `docblockr_indentation_spaces_same_para` *(Number)* Described above in the *Reformatting paragraphs* section. Default: `1`
 
-- `docblockr.autoadd_method_tag` *(Boolean)* Add a `@method` tag to docblocks of functions. Default: `false`
+- `docblockr_autoadd_method_tag` *(Boolean)* Add a `@method` tag to docblocks of functions. Default: `false`
 
-- `docblockr.simple_mode` *(Boolean)* If true, DocBlockr won't add a template when creating a doc block before a function or variable. Useful if you don't want to write Javadoc-style, but still want your editor to help when writing block comments. Default: `false`
+- `docblockr_simple_mode` *(Boolean)* If true, DocBlockr won't add a template when creating a doc block before a function or variable. Useful if you don't want to write Javadoc-style, but still want your editor to help when writing block comments. Default: `false`
 
-- `docblockr.lower_case_primitives` *(Boolean)* If true, primitive data types are added in lower case, eg "number" instead of "Number". Default: `false`
+- `docblockr_lower_case_primitives` *(Boolean)* If true, primitive data types are added in lower case, eg "number" instead of "Number". Default: `false`
 
-- `docblockr.short_primitives` *(Boolean)* If true, the primitives `Boolean` and `Integer` are shortened to `Bool` and `Int`. Default: `false`
+- `docblockr_short_primitives` *(Boolean)* If true, the primitives `Boolean` and `Integer` are shortened to `Bool` and `Int`. Default: `false`
 
-- `docblockr.newline_after_block` *(Boolean)* If true, an extra line break is added after the end of a docblock to separate it from the code. Default `false`
+- `docblockr_newline_after_block` *(Boolean)* If true, an extra line break is added after the end of a docblock to separate it from the code. Default `false`
 
-- `docblockr.param_name` *(Boolean)* If true, the name of a function parameter is added to the template. If false, it is omitted. Default: `true`
+- `docblockr_param_name` *(Boolean)* If true, the name of a function parameter is added to the template. If false, it is omitted. Default: `true`
 
-- `docblockr.decorate` *(Boolean)* If false, disable decoration of single line comments with <kbd>Ctrl+Enter</kbd>. Default: `true`
+- `docblockr_decorate` *(Boolean)* If false, disable decoration of single line comments with <kbd>Ctrl+Enter</kbd>. Default: `true`
 
-- `docblockr.quick_open_inline` *(Boolean)* If true, an inline docblock will be opened when pressing <kbd>Space</kbd> after an opener (`/**`). When set to `false`, these can be opened by pressing <kbd>Shift+Enter</kbd>. Default: `true`
+- `docblockr_quick_open_inline` *(Boolean)* If true, an inline docblock will be opened when pressing <kbd>Space</kbd> after an opener (`/**`). When set to `false`, these can be opened by pressing <kbd>Shift+Enter</kbd>. Default: `true`
 
-- `docblockr.function_description` *(Boolean)* If true, a 'description' line will be added for functions. Default: `true`
+- `docblockr_function_description` *(Boolean)* If true, a 'description' line will be added for functions. Default: `true`
 
 ## Contributors
 
