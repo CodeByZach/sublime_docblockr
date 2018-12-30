@@ -57,22 +57,22 @@ def getParser(view):
     viewSettings = sublime.load_settings("DocBlockr.sublime-settings")
 
     if sourceLang == "php":
-        return DocBlockrPHP(viewSettings)
+        return DocblockrPHP(viewSettings)
     elif sourceLang == "coffee":
-        return DocBlockrCoffee(viewSettings)
+        return DocblockrCoffee(viewSettings)
     elif sourceLang == "actionscript" or sourceLang == 'haxe':
-        return DocBlockrActionscript(viewSettings)
+        return DocblockrActionscript(viewSettings)
     elif sourceLang == "c++" or sourceLang == 'c' or sourceLang == 'cuda-c++':
-        return DocBlockrCPP(viewSettings)
+        return DocblockrCPP(viewSettings)
     elif sourceLang == 'objc' or sourceLang == 'objc++':
-        return DocBlockrObjC(viewSettings)
+        return DocblockrObjC(viewSettings)
     elif sourceLang == 'java' or sourceLang == 'groovy' or sourceLang == 'apex':
-        return DocBlockrJava(viewSettings)
+        return DocblockrJava(viewSettings)
     elif sourceLang == 'rust':
-        return DocBlockrRust(viewSettings)
+        return DocblockrRust(viewSettings)
     elif sourceLang == 'ts':
-        return DocBlockrTypescript(viewSettings)
-    return DocBlockrJavascript(viewSettings)
+        return DocblockrTypescript(viewSettings)
+    return DocblockrJavascript(viewSettings)
 
 
 def splitByCommas(str):
@@ -147,7 +147,7 @@ def getDocBlockRegion(view, point):
 
     return sublime.Region(start, end)
 
-class DocBlockrCommand(sublime_plugin.TextCommand):
+class DocblockrCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, inline=False):
 
@@ -337,7 +337,7 @@ class DocBlockrCommand(sublime_plugin.TextCommand):
         return snippet
 
 
-class DocBlockrParser(object):
+class DocblockrParser(object):
 
     def __init__(self, viewSettings):
         self.viewSettings = viewSettings
@@ -604,7 +604,7 @@ class DocBlockrParser(object):
         return definition
 
 
-class DocBlockrJavascript(DocBlockrParser):
+class DocblockrJavascript(DocblockrParser):
     def setupSettings(self):
         identifier = '[a-zA-Z_$][a-zA-Z_$0-9]*'
         self.settings = {
@@ -717,10 +717,10 @@ class DocBlockrJavascript(DocBlockrParser):
     def getFunctionReturnType(self, name, retval):
         if name and name[0] == '*':
             return None
-        return super(DocBlockrJavascript, self).getFunctionReturnType(name, retval)
+        return super(DocblockrJavascript, self).getFunctionReturnType(name, retval)
 
     def getMatchingNotations(self, name):
-        out = super(DocBlockrJavascript, self).getMatchingNotations(name)
+        out = super(DocblockrJavascript, self).getMatchingNotations(name)
         if name and name[0] == '*':
             # if '@returns' is preferred, then also use '@yields'. Otherwise, '@return' and '@yield'
             yieldTag = '@yield' + ('s' if self.viewSettings.get('docblockr_return_tag', '_')[-1] == 's' else '')
@@ -757,7 +757,7 @@ class DocBlockrJavascript(DocBlockrParser):
         return None
 
 
-class DocBlockrPHP(DocBlockrParser):
+class DocblockrPHP(DocblockrParser):
     def setupSettings(self):
         shortPrimitives = self.viewSettings.get('docblockr_short_primitives') or False
         nameToken = '[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*'
@@ -888,10 +888,10 @@ class DocBlockrPHP(DocBlockrParser):
         if (retval):
             return retval
 
-        return DocBlockrParser.getFunctionReturnType(self, name, retval)
+        return DocblockrParser.getFunctionReturnType(self, name, retval)
 
 
-class DocBlockrCPP(DocBlockrParser):
+class DocblockrCPP(DocblockrParser):
     def setupSettings(self):
         nameToken = '[a-zA-Z_][a-zA-Z0-9_]*'
         identifier = '(%s)(::%s)?' % (nameToken, nameToken)
@@ -924,7 +924,7 @@ class DocBlockrCPP(DocBlockrParser):
     def parseArgs(self, args):
         if args.strip() == 'void':
             return []
-        return super(DocBlockrCPP, self).parseArgs(args)
+        return super(DocblockrCPP, self).parseArgs(args)
 
     def getArgType(self, arg):
         return None
@@ -942,7 +942,7 @@ class DocBlockrCPP(DocBlockrParser):
         return retval if retval != 'void' else None
 
 
-class DocBlockrCoffee(DocBlockrParser):
+class DocblockrCoffee(DocblockrParser):
     def setupSettings(self):
         identifier = '[a-zA-Z_$][a-zA-Z_$0-9]*'
         self.settings = {
@@ -1012,7 +1012,7 @@ class DocBlockrCoffee(DocBlockrParser):
         return None
 
 
-class DocBlockrActionscript(DocBlockrParser):
+class DocblockrActionscript(DocblockrParser):
 
     def setupSettings(self):
         nameToken = '[a-zA-Z_][a-zA-Z0-9_]*'
@@ -1064,7 +1064,7 @@ class DocBlockrActionscript(DocBlockrParser):
         return None
 
 
-class DocBlockrObjC(DocBlockrParser):
+class DocblockrObjC(DocblockrParser):
 
     def setupSettings(self):
         identifier = '[a-zA-Z_$][a-zA-Z_$0-9]*'
@@ -1151,7 +1151,7 @@ class DocBlockrObjC(DocBlockrParser):
         return None
 
 
-class DocBlockrJava(DocBlockrParser):
+class DocblockrJava(DocblockrParser):
     def setupSettings(self):
         identifier = '[a-zA-Z_$][a-zA-Z_$0-9]*'
         self.settings = {
@@ -1209,7 +1209,7 @@ class DocBlockrJava(DocBlockrParser):
         return None
 
     def formatFunction(self, name, args, retval, throws_args, options={}):
-        out = DocBlockrParser.formatFunction(self, name, args, retval, options)
+        out = DocblockrParser.formatFunction(self, name, args, retval, options)
 
         if throws_args != "":
             for unused, exceptionName in self.parseArgs(throws_args):
@@ -1274,7 +1274,7 @@ class DocBlockrJava(DocBlockrParser):
                 break
         return definition
 
-class DocBlockrRust(DocBlockrParser):
+class DocblockrRust(DocblockrParser):
     def setupSettings(self):
         self.settings = {
             "curlyTypes": False,
@@ -1303,7 +1303,7 @@ class DocBlockrRust(DocBlockrParser):
 ############################################################33
 
 
-class DocBlockrIndentCommand(sublime_plugin.TextCommand):
+class DocblockrIndentCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         v = self.view
@@ -1339,7 +1339,7 @@ class DocBlockrIndentCommand(sublime_plugin.TextCommand):
         return None
 
 
-class DocBlockrJoinCommand(sublime_plugin.TextCommand):
+class DocblockrJoinCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         v = self.view
         for sel in v.sel():
@@ -1347,7 +1347,7 @@ class DocBlockrJoinCommand(sublime_plugin.TextCommand):
                 v.replace(edit, v.find("[ \\t]*\\n[ \\t]*((?:\\*|//[!/]?|#)[ \\t]*)?", lineRegion.begin()), ' ')
 
 
-class DocBlockrDecorateCommand(sublime_plugin.TextCommand):
+class DocblockrDecorateCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         v = self.view
         re_whitespace = re.compile("^(\\s*)//")
@@ -1375,7 +1375,7 @@ class DocBlockrDecorateCommand(sublime_plugin.TextCommand):
             v.insert(edit, sel.begin(), "/" * (lineLength + 3) + "\n")
 
 
-class DocBlockrDeindent(sublime_plugin.TextCommand):
+class DocblockrDeindent(sublime_plugin.TextCommand):
     """
     When pressing enter at the end of a docblock, this takes the cursor back one space.
     /**
@@ -1390,7 +1390,7 @@ class DocBlockrDeindent(sublime_plugin.TextCommand):
         v.insert(edit, v.sel()[0].begin(), re.sub("^(\\s*)\\s\\*/.*", "\n\\1", line))
 
 
-class DocBlockrReparse(sublime_plugin.TextCommand):
+class DocblockrReparse(sublime_plugin.TextCommand):
     """
     Reparse a docblock to make the fields 'active' again, so that pressing tab will jump to the next one
     """
@@ -1417,7 +1417,7 @@ class DocBlockrReparse(sublime_plugin.TextCommand):
         write(v, text)
 
 
-class DocBlockrTrimAutoWhitespace(sublime_plugin.TextCommand):
+class DocblockrTrimAutoWhitespace(sublime_plugin.TextCommand):
     """
     Trim the automatic whitespace added when creating a new line in a docblock.
     """
@@ -1429,7 +1429,7 @@ class DocBlockrTrimAutoWhitespace(sublime_plugin.TextCommand):
         v.replace(edit, lineRegion, re.sub("^(\\s*\\*)\\s*$", "\\1\n\\1" + (" " * spaces), line))
 
 
-class DocBlockrWrapLines(sublime_plugin.TextCommand):
+class DocblockrWrapLines(sublime_plugin.TextCommand):
     """
     Reformat description text inside a comment block to wrap at the correct length.
     Wrap column is set by the first ruler (set in Default.sublime-settings), or 80 by default.
@@ -1537,7 +1537,7 @@ class DocBlockrWrapLines(sublime_plugin.TextCommand):
         write(v, text)
 
 
-class DocBlockrTypescript(DocBlockrParser):
+class DocblockrTypescript(DocblockrParser):
 
     def setupSettings(self):
         identifier = '[a-zA-Z_$][a-zA-Z_$0-9]*'

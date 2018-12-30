@@ -58,7 +58,7 @@ class ViewTestCase(unittest.TestCase):
     def run_doc_blockr(self):
         self.view.run_command('docblockr')
 
-    def assertDocBlockrResult(self, expected):
+    def assertDocblockrResult(self, expected):
         if isinstance(expected, list):
             expected = '\n'.join(expected)
 
@@ -77,12 +77,12 @@ class TestJavaScript(ViewTestCase):
     def test_basic(self):
         self.set_view_content("\n/**|\nbasic")
         self.run_doc_blockr()
-        self.assertDocBlockrResult('\n/**\n * \n */\nbasic')
+        self.assertDocblockrResult('\n/**\n * \n */\nbasic')
 
     def test_empty_doc_blocks_are_created(self):
         self.set_view_content('/**')
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "/**",
             " * |CURSOR|",
             " */"
@@ -91,7 +91,7 @@ class TestJavaScript(ViewTestCase):
     def test_that_function_template_is_added(self):
         self.set_view_content('/**|\nfunction foo () {')
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * |SELECTION_BEGIN|[foo description]|SELECTION_END|',
             ' * @return {[type]} [description]',
@@ -102,7 +102,7 @@ class TestJavaScript(ViewTestCase):
     def test_parameters_are_added_to_function_templates(self):
         self.set_view_content('/**|\nfunction foo (bar, baz) {')
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * |SELECTION_BEGIN|[foo description]|SELECTION_END|',
             ' * @param  {[type]} bar [description]',
@@ -116,7 +116,7 @@ class TestJavaScript(ViewTestCase):
         self.set_view_content('/**|\nfunction foo (bar, baz) {')
         self.view.settings().set('docblockr_function_description', False)
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * @param  |SELECTION_BEGIN|{[type]}|SELECTION_END| bar [description]',
             ' * @param  {[type]} baz [description]',
@@ -130,7 +130,7 @@ class TestJavaScript(ViewTestCase):
         self.view.settings().set('docblockr_function_description', False)
         self.view.settings().set('docblockr_spacer_between_sections', True)
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * @param  |SELECTION_BEGIN|{[type]}|SELECTION_END| bar [description]',
             ' * @param  {[type]} baz [description]',
@@ -145,7 +145,7 @@ class TestJavaScript(ViewTestCase):
         self.view.settings().set('docblockr_function_description', False)
         self.view.settings().set('docblockr_spacer_between_sections', 'after_description')
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * @param  |SELECTION_BEGIN|{[type]}|SELECTION_END| bar [description]',
             ' * @param  {[type]} baz [description]',
@@ -163,7 +163,7 @@ class TestJavaScript(ViewTestCase):
             '             ) {'
         ])
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * |SELECTION_BEGIN|[foo description]|SELECTION_END|',
             ' * @param  {[type]} bar  [description]',
@@ -183,7 +183,7 @@ class TestJavaScript(ViewTestCase):
             'var foo = 1;'
         ])
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * |SELECTION_BEGIN|[foo description]|SELECTION_END|',
             ' * @type {Number}',
@@ -197,7 +197,7 @@ class TestJavaScript(ViewTestCase):
             'var foo = "a";'
         ])
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * |SELECTION_BEGIN|[foo description]|SELECTION_END|',
             ' * @type {String}',
@@ -211,7 +211,7 @@ class TestJavaScript(ViewTestCase):
             'var foo = \'a\';'
         ])
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * |SELECTION_BEGIN|[foo description]|SELECTION_END|',
             ' * @type {String}',
@@ -225,7 +225,7 @@ class TestJavaScript(ViewTestCase):
             'var foo = bar;'
         ])
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             '/**',
             ' * |SELECTION_BEGIN|[foo description]|SELECTION_END|',
             ' * @type {[type]}',
@@ -246,12 +246,12 @@ class TestPHP(ViewTestCase):
     def test_basic(self):
         self.set_view_content("<?php\n/**|\nbasic")
         self.run_doc_blockr()
-        self.assertDocBlockrResult('<?php\n/**\n * \n */\nbasic')
+        self.assertDocblockrResult('<?php\n/**\n * \n */\nbasic')
 
     def test_issue_292_php_args_pass_by_reference_missing_ampersand_char(self):
         self.set_view_content("<?php\n/**|\nfunction function_name($a1,  $a2 = 'x', array $a3, &$b1, &$b2 = 'x', array &$b3) {}")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[function_name description]|SELECTION_END|",
@@ -269,7 +269,7 @@ class TestPHP(ViewTestCase):
     def test_issue_286_php_args_namespace_char_is_missing(self):
         self.set_view_content("<?php\n/**|\nfunction function_name(A\\NS\\ClassName $class) {}")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[function_name description]|SELECTION_END|",
@@ -282,7 +282,7 @@ class TestPHP(ViewTestCase):
     def test_issue_312_array_type_missing_when_param_is_null(self):
         self.set_view_content("<?php\n/**|\nfunction fname(array $a, array $b = null) {}")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[fname description]|SELECTION_END|",
@@ -296,7 +296,7 @@ class TestPHP(ViewTestCase):
     def test_issue_312_qualified_namespace_type_missing_when_param_is_null(self):
         self.set_view_content("<?php\n/**|\nfunction fname(NS\\ClassA $a, NS\\ClassB $b = null) {}")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[fname description]|SELECTION_END|",
@@ -310,7 +310,7 @@ class TestPHP(ViewTestCase):
     def test_issue_312_fully_qualified_namespace_type_missing_when_param_is_null(self):
         self.set_view_content("<?php\n/**|\nfunction fname(\\NS\\ClassA $a, \\NS\\ClassB $b = null) {}")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[fname description]|SELECTION_END|",
@@ -324,7 +324,7 @@ class TestPHP(ViewTestCase):
     def test_issue_371_with_long_array_syntax(self):
         self.set_view_content("<?php\n/**|\npublic function test(array $foo = array()) {}")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[test description]|SELECTION_END|",
@@ -337,7 +337,7 @@ class TestPHP(ViewTestCase):
     def test_issue_371_method_with_short_array_syntax(self):
         self.set_view_content("<?php\n/**|\npublic function test(array $foo = []) {}")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[test description]|SELECTION_END|",
@@ -350,7 +350,7 @@ class TestPHP(ViewTestCase):
     def test_issue_371_method_with_short_array_syntax_with_whitespace(self):
         self.set_view_content("<?php\n/**|\npublic function test(  array   $foo    =     [      ]       ) {}")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[test description]|SELECTION_END|",
@@ -363,7 +363,7 @@ class TestPHP(ViewTestCase):
     def test_issue_372_property_with_short_array_syntax(self):
         self.set_view_content("<?php\n/**|\nprotected $test = [];")
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * |SELECTION_BEGIN|[$test description]|SELECTION_END|",
@@ -376,7 +376,7 @@ class TestPHP(ViewTestCase):
         self.set_view_content("<?php\n/**|\nfunction fname($a) {}")
         self.view.settings().set('docblockr_function_description', False)
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * @param  |SELECTION_BEGIN|[type]|SELECTION_END| $a [description]",
@@ -390,7 +390,7 @@ class TestPHP(ViewTestCase):
         self.view.settings().set('docblockr_function_description', False)
         self.view.settings().set('docblockr_spacer_between_sections', True)
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * @param  |SELECTION_BEGIN|[type]|SELECTION_END| $a [description]",
@@ -405,7 +405,7 @@ class TestPHP(ViewTestCase):
         self.view.settings().set('docblockr_function_description', False)
         self.view.settings().set('docblockr_spacer_between_sections', 'after_description')
         self.run_doc_blockr()
-        self.assertDocBlockrResult([
+        self.assertDocblockrResult([
             "<?php",
             "/**",
             " * @param  |SELECTION_BEGIN|[type]|SELECTION_END| $a [description]",
