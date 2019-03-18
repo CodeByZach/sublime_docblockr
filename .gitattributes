@@ -9,4 +9,5 @@
 /.gitignore                 export-ignore
 /.gitmodules                export-ignore
 /test_runner.py             export-ignore
+/docs/                      export-ignore
 /tests/                     export-ignore

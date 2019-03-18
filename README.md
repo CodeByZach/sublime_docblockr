@@ -4,7 +4,7 @@ DocBlockr is a package for [Sublime Text 2 & 3][sublime] which makes writing doc
 
 ## Installation
 
-### [Package Control](https://sublime.wbond.net/installation)
+### [Package Control](https://packagecontrol.io)
 
 1. Open Package Control: `Preferences -> Package Control`
 2. Select `Package Control: Install Package`
@@ -30,27 +30,27 @@ See [the history file][history].
 
 Pressing **enter** or **tab** after `/**` (or `###*` for Coffee-Script) yields a new line and closes the comment.
 
-![](http://spadgos.github.io/sublime-jsdocs/images/basic.gif)
+![](docs/basic.gif)
 
 Single-asterisk comment blocks behave similarly:
 
-![](http://spadgos.github.io/sublime-jsdocs/images/basic-block.gif)
+![](docs/basic-block.gif)
 
 ### Function documentation
 
 However, if the line directly afterwards contains a function definition, then its name and parameters are parsed and some documentation is automatically added.
 
-![](http://spadgos.github.io/sublime-jsdocs/images/function-template.gif)
+![](docs/function-template.gif)
 
 Press <kbd>Tab</kbd> to move forward through the fields, press <kbd>Shift</kbd>+<kbd>Tab</kbd> to move back through the fields.
 
 If there are many arguments, or long variable names, it is sometimes useful to spread the arguments across multiple lines. DocBlockr handles this situation too:
 
-![](http://spadgos.github.io/sublime-jsdocs/images/long-args.gif)
+![](docs/long-args.gif)
 
 In languages which support [type hinting][typehinting] or default values, then those types are prefilled as the datatypes.
 
-![](http://spadgos.github.io/sublime-jsdocs/images/type-hinting.gif)
+![](docs/type-hinting.gif)
 
 DocBlockr will try to make an intelligent guess about the return value of the function.
 
@@ -70,7 +70,7 @@ If the line following the docblock contains a variable declaration, DocBlockr wi
 
 Press <kbd>space</kbd> or <kbd>shift</kbd>+<kbd>enter</kbd> after an opening `/**` to insert an inline docblock.
 
-![](http://spadgos.github.io/sublime-jsdocs/images/vars.gif)
+![](docs/vars.gif)
 
 DocBlockr will also try to determine the type of the variable from its name. Variables starting with `is` or `has` are assumed to be booleans, and `callback`, `cb`, `done`, `fn`, and `next` are assumed to be functions. If you use your own variable naming system, (e.g. hungarian notation: booleans all start with `b`, arrays start with `arr`), you can define these rules yourself. Use the `docblockr_notation_map` setting, example:
 
@@ -102,19 +102,19 @@ The notation map can also be used to add arbitrary tags, according to your own c
 
 Pressing enter inside a docblock will automatically insert a leading asterisk and maintain your indentation.
 
-![](http://spadgos.github.io/sublime-jsdocs/images/auto-indent.gif)
+![](docs/auto-indent.gif)
 
-![](http://spadgos.github.io/sublime-jsdocs/images/auto-indent-2.gif)
+![](docs/auto-indent-2.gif)
 
 This applies to docblock comments `/** like this */` as well as inline double-slash comments `// like this`
 
-![](http://spadgos.github.io/sublime-jsdocs/images/single-line.gif)
+![](docs/single-line.gif)
 
 In either case, you can press `shift+enter` to stop the automatic extension.
 
 Oftentimes, when documenting a parameter, or adding a description to a tag, your description will cover multiple lines. If the line you are on is directly following a tag line, pressing <kbd>Tab</kbd> will move the indentation to the correct position.
 
-![](http://spadgos.github.io/sublime-jsdocs/images/deep-indent.gif)
+![](docs/deep-indent.gif)
 
 ### Comment decoration
 
@@ -159,7 +159,7 @@ Finally, typing `@` inside a docblock will show a completion list for all tags s
 You can access the configuration settings by selecting `Preferences -> Package Settings -> DocBlockr`.
 
 - `docblockr_indentation_spaces` *(Number)* The number of spaces to indent after the leading asterisk.
-
+```
         // docblockr_indentation_spaces = 1
         /**
          * foo
@@ -169,7 +169,7 @@ You can access the configuration settings by selecting `Preferences -> Package S
         /**
          *     foo
          */
-
+```
 - `docblockr_align_tags` *(String)* Whether the words following the tags should align. Possible values are `'no'`, `'shallow'` and `'deep'`
 
     > For backwards compatibility, `false` is equivalent to `'no'`, `true` is equivalent to `'shallow'`
@@ -188,7 +188,7 @@ You can access the configuration settings by selecting `Preferences -> Package S
 
 
 - `docblockr_extra_tags` *(Array.String)* An array of strings, each representing extra boilerplate comments to add to *functions*. These can also include arbitrary text (not just tags).
-
+```
         // docblockr_extra_tags = ['This is a cool function', '@author nickf', '@version ${1:[version]}']
         /**<<enter>>
         function foo (x) {}
@@ -202,9 +202,9 @@ You can access the configuration settings by selecting `Preferences -> Package S
          * @return {[type]}
          */
         function foo (x) {}
-
+```
     Basic variable substitution is supported here for the variables `date` and `datetime`, wrapped in double curly brackets.
-
+```
         // docblockr_extra_tags = ['@date {{date}}', '@anotherdate {{datetime}}']
         /**<<enter>>
         function foo() {}
@@ -215,7 +215,7 @@ You can access the configuration settings by selecting `Preferences -> Package S
          * @datetime 2013-03-25T21:16:25+0100
          * @return   {[type]}
          */
-
+```
 - `docblockr_extra_tags_go_after` *(Boolean)* If true, the extra tags are placed at the end of the block (after param/return). Default: `false`
 
 - `docblockr_extend_double_slash` *(Boolean)* Whether double-slash comments should be extended. An example of this feature is described above. Default: `true`
@@ -254,17 +254,17 @@ You can access the configuration settings by selecting `Preferences -> Package S
 
 This package was created by [Nick Fisher][spadgos], but has many contributions from others. Please take a look at the [contributors list][contributors] to see who else should get some thanks.
 
-[closure]: http://code.google.com/closure/compiler/docs/js-for-compiler.html
-[contrib]: https://github.com/EatBreatheCode/DocBlockr/blob/master/CONTRIBUTING.md
-[contributors]: https://github.com/EatBreatheCode/DocBlockr/blob/master/CONTRIBUTORS.md
-[history]: https://github.com/EatBreatheCode/DocBlockr/blob/master/HISTORY.md
-[issues]: https://github.com/EatBreatheCode/DocBlockr/issues
-[jsdoc]: http://code.google.com/p/jsdoc-toolkit/wiki/TagReference
-[magicmethods]: http://www.php.net/manual/en/language.oop5.magic.php
-[package_control]: http://wbond.net/sublime_packages/package_control
-[phpdoc]: http://phpdoc.org/
+[closure]: https://code.google.com/closure/compiler/docs/js-for-compiler.html
+[contrib]: https://github.com/EatBreatheCode/sublime_docblockr/blob/master/CONTRIBUTING.md
+[contributors]: https://github.com/EatBreatheCode/sublime_docblockr/blob/master/CONTRIBUTORS.md
+[history]: https://github.com/EatBreatheCode/sublime_docblockr/blob/master/HISTORY.md
+[issues]: https://github.com/EatBreatheCode/sublime_docblockr/issues
+[jsdoc]: https://code.google.com/p/jsdoc-toolkit/wiki/TagReference
+[magicmethods]: https://www.php.net/manual/en/language.oop5.magic.php
+[package_control]: https://packagecontrol.io
+[phpdoc]: https://phpdoc.org/
 [spadgos]: https://github.com/spadgos
-[sublime]: http://www.sublimetext.com/
-[tags]: https://github.com/EatBreatheCode/DocBlockr/tags
-[typehinting]: http://php.net/manual/en/language.oop5.typehinting.php
-[yui]: http://yui.github.com/yuidoc/syntax/index.html
+[sublime]: https://www.sublimetext.com/
+[tags]: https://github.com/EatBreatheCode/sublime_docblockr/tags
+[typehinting]: https://php.net/manual/en/language.oop5.typehinting.php
+[yui]: https://yui.github.com/yuidoc/syntax/index.html
