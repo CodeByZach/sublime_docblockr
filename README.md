@@ -1,4 +1,5 @@
 # DocBlockr
+[![Latest Release](https://img.shields.io/github/tag/EatBreatheCode/sublime_docblockr.svg?label=version)](https://github.com/EatBreatheCode/sublime_docblockr/releases)
 
 DocBlockr is a package for [Sublime Text 2 & 3][sublime] which makes writing documentation a breeze. DocBlockr supports **JavaScript** (including ES6), **PHP**, **ActionScript**, **Haxe**, **CoffeeScript**, **TypeScript**, **Java**, **Apex**, **Groovy**, **Objective C**, **C**, **C++** and **Rust**.
 
