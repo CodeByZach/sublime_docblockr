@@ -1,5 +1,5 @@
 # DocBlockr
-[![Latest Release](https://img.shields.io/github/tag/EatBreatheCode/sublime_docblockr.svg?label=version)](https://github.com/EatBreatheCode/sublime_docblockr/releases)
+[![Latest Release](https://img.shields.io/github/tag/CodeByZach/sublime_docblockr.svg?label=version)](https://github.com/CodeByZach/sublime_docblockr/releases)
 
 DocBlockr is a package for [Sublime Text 2 & 3][sublime] which makes writing documentation a breeze. DocBlockr supports **JavaScript** (including ES6), **PHP**, **ActionScript**, **Haxe**, **CoffeeScript**, **TypeScript**, **Java**, **Apex**, **Groovy**, **Objective C**, **C**, **C++** and **Rust**.
 
@@ -256,16 +256,16 @@ You can access the configuration settings by selecting `Preferences -> Package S
 This package was created by [Nick Fisher][spadgos], but has many contributions from others. Please take a look at the [contributors list][contributors] to see who else should get some thanks.
 
 [closure]: https://code.google.com/closure/compiler/docs/js-for-compiler.html
-[contrib]: https://github.com/EatBreatheCode/sublime_docblockr/blob/master/CONTRIBUTING.md
-[contributors]: https://github.com/EatBreatheCode/sublime_docblockr/blob/master/CONTRIBUTORS.md
-[history]: https://github.com/EatBreatheCode/sublime_docblockr/blob/master/HISTORY.md
-[issues]: https://github.com/EatBreatheCode/sublime_docblockr/issues
+[contrib]: https://github.com/CodeByZach/sublime_docblockr/blob/master/CONTRIBUTING.md
+[contributors]: https://github.com/CodeByZach/sublime_docblockr/blob/master/CONTRIBUTORS.md
+[history]: https://github.com/CodeByZach/sublime_docblockr/blob/master/HISTORY.md
+[issues]: https://github.com/CodeByZach/sublime_docblockr/issues
 [jsdoc]: https://code.google.com/p/jsdoc-toolkit/wiki/TagReference
 [magicmethods]: https://www.php.net/manual/en/language.oop5.magic.php
 [package_control]: https://packagecontrol.io
 [phpdoc]: https://phpdoc.org/
 [spadgos]: https://github.com/spadgos
 [sublime]: https://www.sublimetext.com/
-[tags]: https://github.com/EatBreatheCode/sublime_docblockr/tags
+[tags]: https://github.com/CodeByZach/sublime_docblockr/tags
 [typehinting]: https://php.net/manual/en/language.oop5.typehinting.php
 [yui]: https://yui.github.com/yuidoc/syntax/index.html
