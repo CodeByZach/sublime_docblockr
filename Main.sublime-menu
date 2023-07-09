@@ -1,9 +1,13 @@
 [
     {
+        "caption": "Preferences",
+        "mnemonic": "n",
         "id": "preferences",
         "children":
         [
             {
+                "caption": "Package Settings",
+                "mnemonic": "P",
                 "id": "package-settings",
                 "children":
                 [
@@ -13,25 +17,102 @@
                         [
                             {
                                 "caption": "Settings",
-                                "command": "edit_settings", "args": {
-                                    "base_file": "${packages}/DocBlockr/Doc​Blockr.sublime-settings",
+                                "command": "edit_settings",
+                                "args":
+                                {
+                                    "base_file": "${packages}/DocBlockr/DocBlockr.sublime-settings",
                                     "default": "{\n$0\n}\n"
+                                }
+                            },
+                            {
+                                "caption": "Key Bindings",
+                                "command": "z_edit_settings",
+                                "args":
+                                {
+                                    "base_file": "${packages}/DocBlockr/Default (${platform}).sublime-keymap",
+                                    "default": "[\n\t$0\n]\n"
+                                }
+                            },
+                            { "caption": "-" },
+                            {
+                                "caption": "Menus",
+                                "children":
+                                [
+                                    {
+                                        "caption": "Context Menu",
+                                        "command": "z_edit_settings",
+                                        "args":
+                                        {
+                                            "base_file": "${packages}/DocBlockr/Context.sublime-menu",
+                                            "default": "[\n\t$0\n]\n"
+                                        }
+                                    },
+                                    {
+                                        "caption": "Main Menu",
+                                        "command": "z_edit_settings",
+                                        "args":
+                                        {
+                                            "base_file": "${packages}/DocBlockr/Main.sublime-menu",
+                                            "default": "[\n\t$0\n]\n"
+                                        }
+                                    },
+                                    {
+                                        "caption": "Side Bar Menu",
+                                        "command": "z_edit_settings",
+                                        "args":
+                                        {
+                                            "base_file": "${packages}/DocBlockr/Side Bar.sublime-menu",
+                                            "default": "[\n\t$0\n]\n"
+                                        }
+                                    },
+                                    {
+                                        "caption": "Side Bar Open Files Menu",
+                                        "command": "z_edit_settings",
+                                        "args":
+                                        {
+                                            "base_file": "${packages}/DocBlockr/Tab Sidebar Context.sublime-menu",
+                                            "default": "[\n\t$0\n]\n"
+                                        }
+                                    },
+                                    {
+                                        "caption": "Tab Menu",
+                                        "command": "z_edit_settings",
+                                        "args":
+                                        {
+                                            "base_file": "${packages}/DocBlockr/Tab Context.sublime-menu",
+                                            "default": "[\n\t$0\n]\n"
+                                        }
+                                    },
+                                    {
+                                        "caption": "Widget Menu",
+                                        "command": "z_edit_settings",
+                                        "args":
+                                        {
+                                            "base_file": "${packages}/DocBlockr/Widget Context.sublime-menu",
+                                            "default": "[\n\t$0\n]\n"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "caption": "Commands",
+                                "command": "z_edit_settings",
+                                "args":
+                                {
+                                    "base_file": "${packages}/DocBlockr/Default.sublime-commands",
+                                    "default": "[\n\t$0\n]\n"
                                 }
                             },
                             { "caption": "-" },
                             {
                                 "caption": "README",
-                                "command": "open_file", "args":
-                                {
-                                    "file": "${packages}/DocBlockr/README.md"
-                                }
+                                "command": "open_file",
+                                "args": { "file": "${packages}/DocBlockr/README.md" }
                             },
                             {
                                 "caption": "LICENSE",
                                 "command": "open_file",
-                                "args": {
-                                    "file": "${packages}/DocBlockr/LICENSE"
-                                }
+                                "args": { "file": "${packages}/DocBlockr/LICENSE" }
                             }
                         ]
                     }

@@ -1,10 +1,4 @@
 [
-  {
-    "caption": "DocBlockr: Decorate line comment",
-    "command": "docblockr_decorate"
-  },
-  {
-    "caption": "DocBlockr: Reparse comment block",
-    "command": "docblockr_reparse"
-  }
+    { "caption": "DocBlockr: Decorate line comment", "command": "docblockr_decorate" },
+    { "caption": "DocBlockr: Reparse comment block", "command": "docblockr_reparse" }
 ]
