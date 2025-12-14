@@ -3,7 +3,6 @@
 
 # Files & folders that should not be included in production.
 /.github/        export-ignore
-/.python-version export-ignore
 /docs/           export-ignore
 /test_runner.py  export-ignore
 /tests/          export-ignore
