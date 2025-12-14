@@ -11,7 +11,6 @@ import sublime_plugin
 import re
 import datetime
 import time
-import imp
 from functools import reduce
 import sys
 
@@ -366,7 +365,7 @@ class DocblockrParser(object):
             out = self.parseVar(line)
             if out:
                 return self.formatVar(*out)
-        except:
+        except Exception:
             # TODO show exception if dev\debug mode
             return None
 
@@ -438,10 +437,10 @@ class DocblockrParser(object):
 
                 format_str = "@param %s%s"
 
-                typeInfoSettings = self.viewSettings.get("docblockr_type_info")
+                typeInfoSettings = self.viewSettings.get("docblockr_type_info") or {}
                 typeInfoName = escape(argType or self.guessTypeFromName(argName) or "[type]")
-                if typeInfoSettings[typeInfoName]:
-                    format_str += " "+typeInfoSettings[typeInfoName]
+                if typeInfoSettings.get(typeInfoName):
+                    format_str += " " + typeInfoSettings[typeInfoName]
                 elif (self.viewSettings.get('docblockr_param_description')):
                     format_str += " ${1:[description]}"
 
@@ -1293,7 +1292,7 @@ class DocblockrRust(DocblockrParser):
         if not res:
             return None
 
-        name = res.group('name').join('')
+        name = res.group('name')
 
         return (name, [])
 
