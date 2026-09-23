@@ -4,7 +4,7 @@ import unittest
 
 class __docblockr_test_replace_cursor_position(sublime_plugin.TextCommand):
     def run(self, edit):
-        cursor_placeholder = self.view.find('\|', 0)
+        cursor_placeholder = self.view.find(r'\|', 0)
 
         if not cursor_placeholder or cursor_placeholder.empty():
             return

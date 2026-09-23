@@ -38,7 +38,7 @@ def counter():
 
 
 def escape(str):
-    return str.replace('$', '\$').replace('{', '\{').replace('}', '\}')
+    return str.replace('$', r'\$').replace('{', r'\{').replace('}', r'\}')
 
 
 def is_numeric(val):
@@ -51,7 +51,7 @@ def is_numeric(val):
 
 def getParser(view):
     scope = view.scope_name(view.sel()[0].end())
-    res = re.search('\\bsource\\.([a-z+\-]+)', scope)
+    res = re.search('\\bsource\\.([a-z+\\-]+)', scope)
     sourceLang = res.group(1) if res else 'js'
     viewSettings = sublime.load_settings("Doc​Blockr.sublime-settings")
 
@@ -220,7 +220,7 @@ class DocblockrCommand(sublime_plugin.TextCommand):
         def outputWidth(str):
             # get the length of a string, after it is output as a snippet,
             # "${1:foo}" --> 3
-            return len(re.sub("[$][{]\\d+:([^}]+)[}]", "\\1", str).replace('\$', '$'))
+            return len(re.sub("[$][{]\\d+:([^}]+)[}]", "\\1", str).replace(r'\$', '$'))
 
         # count how many columns we have
         maxCols = 0
@@ -645,7 +645,7 @@ class DocblockrJavascript(DocblockrParser):
         ) or re.search(
             # ES6 method initializer shorthand
             # var person = { getName() { return this.name; } }
-            r'(?P<name1>' + self.settings['varIdentifier'] + ')\s*\((?P<args>.*)\)\s*\{',
+            r'(?P<name1>' + self.settings['varIdentifier'] + r')\s*\((?P<args>.*)\)\s*\{',
             line
         )
         if not res:
@@ -675,7 +675,7 @@ class DocblockrJavascript(DocblockrParser):
             #        foo : blah
             #   }
 
-            '(?P<name>' + self.settings['varIdentifier'] + ')\s*[=:]\s*(?P<val>.*?)(?:[;,]|$)',
+            '(?P<name>' + self.settings['varIdentifier'] + r')\s*[=:]\s*(?P<val>.*?)(?:[;,]|$)',
             line
         )
         if not res:
@@ -684,7 +684,7 @@ class DocblockrJavascript(DocblockrParser):
         return (res.group('name'), res.group('val').strip())
 
     def getArgInfo(self, arg):
-        if (re.search('^\{.*\}$', arg)):
+        if (re.search(r'^\{.*\}$', arg)):
             subItems = splitByCommas(arg[1:-1])
             prefix = 'options.'
         else:
@@ -912,7 +912,7 @@ class DocblockrCPP(DocblockrParser):
             + '(?P<name>' + self.settings['varIdentifier'] + ');?'
             # void fnName
             # (arg1, arg2)
-            + '\\s*\\(\\s*(?P<args>.*)\)',
+            + '\\s*\\(\\s*(?P<args>.*)\\)',
             line
         )
         if not res:
@@ -961,7 +961,7 @@ class DocblockrCoffee(DocblockrParser):
     def parseFunction(self, line):
         res = re.search(
             #   fnName = function,  fnName : function
-            '(?:(?P<name>' + self.settings['varIdentifier'] + ')\s*[:=]\s*)?'
+            '(?:(?P<name>' + self.settings['varIdentifier'] + r')\s*[:=]\s*)?'
             + '(?:\\((?P<args>[^()]*?)\\))?\\s*([=-]>)',
             line
         )
@@ -983,7 +983,7 @@ class DocblockrCoffee(DocblockrParser):
             #        foo : blah
             #   }
 
-            '(?P<name>' + self.settings['varIdentifier'] + ')\s*[=:]\s*(?P<val>.*?)(?:[;,]|$)',
+            '(?P<name>' + self.settings['varIdentifier'] + r')\s*[=:]\s*(?P<val>.*?)(?:[;,]|$)',
             line
         )
         if not res:
@@ -1030,12 +1030,12 @@ class DocblockrActionscript(DocblockrParser):
     def parseFunction(self, line):
         res = re.search(
             #   fnName = function,  fnName : function
-            '(?:(?P<name1>' + self.settings['varIdentifier'] + ')\s*[:=]\s*)?'
-            + 'function(?:\s+(?P<getset>[gs]et))?'
+            '(?:(?P<name1>' + self.settings['varIdentifier'] + r')\s*[:=]\s*)?'
+            + r'function(?:\s+(?P<getset>[gs]et))?'
             # function fnName
-            + '(?:\s+(?P<name2>' + self.settings['fnIdentifier'] + '))?'
+            + r'(?:\s+(?P<name2>' + self.settings['fnIdentifier'] + '))?'
             # (arg1, arg2)
-            + '\s*\(\s*(?P<args>.*)\)',
+            + r'\s*\(\s*(?P<args>.*)\)',
             line
         )
         if not res:
@@ -1075,7 +1075,7 @@ class DocblockrObjC(DocblockrParser):
             # technically, they can contain all sorts of unicode, but w/e
             "varIdentifier": identifier,
             "fnIdentifier":  identifier,
-            "fnOpener": '^\s*[-+]',
+            "fnOpener": r'^\s*[-+]',
             "commentCloser": " */",
             "bool": "Boolean",
             "function": "Function"
@@ -1108,7 +1108,7 @@ class DocblockrObjC(DocblockrParser):
 
         typeRE = r'[a-zA-Z_$][a-zA-Z0-9_$]*\s*\**'
         res = re.search(
-            '[-+]\s+\\(\\s*(?P<retval>' + typeRE + ')\\s*\\)\\s*'
+            '[-+]\\s+\\(\\s*(?P<retval>' + typeRE + ')\\s*\\)\\s*'
             + '(?P<name>[a-zA-Z_$][a-zA-Z0-9_$]*)'
             # void fnName
             # (arg1, arg2)
@@ -1238,7 +1238,7 @@ class DocblockrJava(DocblockrParser):
 
             pos += len(line) + 1
             # Move past empty lines
-            if re.search("^\s*$", line):
+            if re.search(r"^\s*$", line):
                 continue
             # strip comments
             line = re.sub("//.*", "", line)
@@ -1248,10 +1248,10 @@ class DocblockrJava(DocblockrParser):
                 if self.settings['fnOpener'] and re.search(self.settings['fnOpener'], line):
                     pass
                 # Handle Annotations
-                elif re.search("^\s*@", line):
+                elif re.search(r"^\s*@", line):
                     if re.search("{", line) and not re.search("}", line):
                         open_curly_annotation = True
-                    if re.search("\(", line) and not re.search("\)", line):
+                    if re.search(r"\(", line) and not re.search(r"\)", line):
                         open_paren_annotation = True
                     continue
                 elif open_curly_annotation:
@@ -1259,9 +1259,9 @@ class DocblockrJava(DocblockrParser):
                         open_curly_annotation = False
                     continue
                 elif open_paren_annotation:
-                    if re.search("\)", line):
+                    if re.search(r"\)", line):
                         open_paren_annotation = False
-                elif re.search("^\s*$", line):
+                elif re.search(r"^\s*$", line):
                     continue
                 # Check for function
                 elif not self.settings['fnOpener'] or not re.search(self.settings['fnOpener'], line):
@@ -1281,14 +1281,14 @@ class DocblockrRust(DocblockrParser):
             "typeTag": False,
             "varIdentifier": ".*",
             "fnIdentifier":  ".*",
-            "fnOpener": "^\s*fn",
+            "fnOpener": r"^\s*fn",
             "commentCloser": " */",
             "bool": "Boolean",
             "function": "Function"
         }
 
     def parseFunction(self, line):
-        res = re.search('\s*fn\s+(?P<name>\S+)', line)
+        res = re.search(r'\s*fn\s+(?P<name>\S+)', line)
         if not res:
             return None
 
@@ -1588,7 +1588,7 @@ class DocblockrTypescript(DocblockrParser):
     def getArgName(self, arg):
         if ':' in arg:
             arg = arg.split(':')[0]
-        return arg.strip('[ \?]')
+        return arg.strip(r'[ \?]')
 
     def parseVar(self, line):
         res = self.varRE.search(line)
